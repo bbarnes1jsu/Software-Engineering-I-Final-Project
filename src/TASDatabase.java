@@ -9,57 +9,110 @@
  * @author Dustin Moody
  */
 import java.sql.*;
+import java.util.*;
 import org.json.simple.*;
 
-public class TASDatabase {
 
+public class TASDatabase{
+    
     public static void main(String[] args){
-        JSONArray results = getJSONData();
-    }
+        
+        new TASDatabase().openConnection();
+        
+    } 
     
-    public static JSONArray getJSONData(){
-    
-        JSONArray results = new JSONArray();
-    
-        Connection conn = null;
-        PreparedStatement pstSelect = null, pstUpdate = null; 
-        ResultSet resultset = null;
-        ResultSetMetaData metadata = null;
+    Connection conn;
+    ResultSet resultset;
+    ResultSetMetaData metadata;
+    Statement stmt;
 
-        String query;
+    public void openConnection(){
 
-        boolean hasresults;
-        int resultCount, columnCount, updateCount = 0;
-
-        try {
+        
+        //Opens connection to database
+        
+        try{
 
             /* Identify the Server */
 
-            String server = ("jbdc:mysql://localhost/tas");
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            String server = "jdbc:mysql://localhost/tas";
             String username = "teamc";
             String password = "CS310";
             System.out.println("Connecting to " + server + "...");
             
-            /* Load the MySQL JDBS Drive */
-        
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        
-            /* Open Connection */
+            
+            /* Open Connection and statement*/
         
             conn = DriverManager.getConnection(server, username, password);
+            stmt = conn.createStatement();
             
             /* Test Connection */
             
-            if (conn.isValid(0)){
+            if(conn.isValid(0)){
                 
                 /* Connection Open! */
                 
                 System.out.println("Connected Succesfully!"); 
+
             }
+            
+            else{
+                
+                System.out.println("Connection failed!"); 
+                
+            }
+            
+            
         }
         
         
+        catch (Exception e) {
+            System.err.println(e.toString());
+        }
         
-        return results; 
     }
+    
+    public void closeConnection(){
+        
+        try{
+            conn.close();
+        }
+        catch(Exception e){
+            System.err.println(e.toString());
+        }
+        
+    }
+    
+    public void closeStatement(Statement stmt){
+        
+        try{
+            stmt.close();
+        }
+        
+        catch(Exception e){
+            System.err.println(e.toString());
+        }
+    }
+    
+   /*public Badge getBadge(String id){
+       
+       try{
+           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =' " + id + " ' ");
+           if (resultset != null){
+               resultset.next();
+               String badge = resultset.getString("id");
+        }
+           
+       }
+       
+   }*/
+   
+   public void getShift(){
+       
+   }
+   
+   public void getPunch(){
+       
+   }
 }

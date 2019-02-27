@@ -1,9 +1,9 @@
-package tas_fa18;
+package cs310;
 
-import tas_fa18.Shift;
-import tas_fal8.TASDatabase;
-import tas_fa18.Punch;
-import tas_fa18.Badge;
+import cs310.Shift;
+import cs310.TASDatabase;
+import cs310.Punch;
+import cs310.Badge;
 
 import org.junit.*;
 import static org.junit.Assert.*;

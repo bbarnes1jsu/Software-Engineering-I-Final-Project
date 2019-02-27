@@ -1,3 +1,5 @@
+package cs310;
+
 import java.time.LocalTime;
 
 /**

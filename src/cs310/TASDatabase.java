@@ -8,6 +8,8 @@
  *
  * @author Dustin Moody
  */
+package cs310;
+
 import java.sql.*;
 import java.util.*;
 import org.json.simple.*;
@@ -15,18 +17,12 @@ import org.json.simple.*;
 
 public class TASDatabase{
     
-    public static void main(String[] args){
-        
-        new TASDatabase().openConnection();
-        
-    } 
-    
     Connection conn;
     ResultSet resultset;
     ResultSetMetaData metadata;
     Statement stmt;
 
-    public void openConnection(){
+    public TASDatabase(){
 
         
         //Opens connection to database

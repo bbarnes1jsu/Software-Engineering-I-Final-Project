@@ -1,4 +1,4 @@
-package tas_fa18;
+package cs310;
 
 import tas_fa18.Shift;
 import tas_fal8.TASDatabase;

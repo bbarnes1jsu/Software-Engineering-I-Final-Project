@@ -106,8 +106,9 @@ public class TASDatabase{
            if (resultset != null){
                resultset.next();
                String badgeid = resultset.getString("id");
+               String badgeDesc = resultset.getString("description");
                
-               badgeQuery = new Badge(badgeid);
+               badgeQuery = new Badge(badgeid, badgeDesc);
         }
            
        }

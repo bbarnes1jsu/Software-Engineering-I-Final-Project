@@ -1,58 +1,48 @@
-import java.time.LocalTime;
+package cs310;
+
+import java.text.SimpleDateFormat;
+import java.sql.*;
 
 /**
  *
  * @author Dexter
  */
 
+
 public class Shift {
    
-    private int id, interval, gracePeriod, dock;
-    private LocalTime start, stop, lunchStart, lunchStop, lunchDeduct;
-    private String desc;
+    private int interval, gracePeriod, lunchDeduct, dock;
+    private Time start, stop, lunchStart, lunchStop;
+    private String desc, id;
+    
    
-    //Setter Methods
-    public void setId(int id) {
-        this.id = id;
-    }
+    Shift(String id, String desc, Time start, Time stop, int interval, int grace, int dock, Time lunchStart, Time lunchStop, int deduct){
+                    
+                    this.id = id;
+                    this.desc = desc;
+                    this.start= start;
+                    this.stop = stop;
+                    this.interval = interval;
+                    this.gracePeriod = grace;
+                    this.dock = dock;
+                    this.lunchStart = lunchStart;
+                    this.lunchStop = lunchStop;
+                    this.lunchDeduct = deduct;
 
-    public void setInterval(int interval) {
-        this.interval = interval;
-    }
 
-    public void setGracePeriod(int gracePeriod) {
-        this.gracePeriod = gracePeriod;
-    }
-
-    public void setDock(int dock) {
-        this.dock = dock;
-    }
-
-    public void setStart(LocalTime start) {
-        this.start = start;
-    }
-
-    public void setStop(LocalTime stop) {
-        this.stop = stop;
-    }
-
-    public void setLunchStart(LocalTime lunchStart) {
-        this.lunchStart = lunchStart;
-    }
-
-    public void setLunchStop(LocalTime lunchStop) {
-        this.lunchStop = lunchStop;
-    }
-
-    public void setLunchDeduct(LocalTime lunchDeduct) {
-        this.lunchDeduct = lunchDeduct;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
     
-    //Getter Methods
+    public String toString(){
+         
+                    String shift;
+                    String startString = (new SimpleDateFormat("HH:mm")).format(start.getTime());
+                    String stopString = (new SimpleDateFormat("HH:mm")).format(stop.getTime());
+                    String lunchStartString = (new SimpleDateFormat("HH:mm")).format(lunchStart.getTime());
+                    String lunchStopString = (new SimpleDateFormat("HH:mm")).format(lunchStop.getTime());
+                    shift =  desc+": "+startString+" - "+stopString+" (" +((stop.getTime()-start.getTime()) /1000 /60)+" minutes); Lunch: " + lunchStartString+ " - " + lunchStopString+" (" +((lunchStop.getTime()-lunchStart.getTime()) /1000 /60)+" minutes)";
+                    return shift;
+                    
+    }
 
     public int getId() {
         return id;

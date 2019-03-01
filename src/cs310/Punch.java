@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class Punch {
     
+    public Punch(){} //made this for my get method - Damien
+    
     GregorianCalendar cal = new GregorianCalendar();
     
     private int terminalid;
@@ -20,7 +22,7 @@ public class Punch {
     private String eventData;
     private boolean lunchFlag = false;
     
-    public Punch(Badge badge,int terminalid,int punchtypeid){
+    public Punch(Badge badge,int terminalid,int punchtypeid, long timeStamp){
         
         this.badgeId = badge.getId();
         this.punchtypeid = punchtypeid;

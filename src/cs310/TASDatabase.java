@@ -17,6 +17,7 @@ import org.json.simple.*;
 
 public class TASDatabase{
     
+    //Objects for get methods
     private Punch punchQuery = new Punch();
     private Badge badgeQuery = new Badge();
     private Shift shiftQuery = new Shift(); 
@@ -73,6 +74,7 @@ public class TASDatabase{
         
     }
     
+    //Closes Connection
     public void closeConnection(){
         
         try{
@@ -84,6 +86,7 @@ public class TASDatabase{
         
     }
     
+    //Closes Statement
     public void closeStatement(Statement stmt){
         
         try{
@@ -97,6 +100,7 @@ public class TASDatabase{
     
    public Badge getBadge(String id){
        
+       //Query for badge info
        try{
            ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =' " + id + " ' ");
            if (resultset != null){
@@ -161,9 +165,7 @@ public class TASDatabase{
                resultset.next();
                String shiftid = resultset.getString("shiftid");
                
-               int shiftIDint = Integer.parseInt("shiftid");
-               
-               shiftQuery = getShift(shiftIDint); 
+               shiftQuery = getShift(shiftid); 
            }
        }
        
@@ -176,7 +178,37 @@ public class TASDatabase{
        return shiftQuery;
    }
    
-   public void getPunch(){
+   public Punch getPunch(int punchid){
        
+       String idString = Integer.toString(punchid);
+       
+       try{
+           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE id=' " + idString +" '" );
+           if (resultset != null){
+               resultset.next();
+               String id = resultset.getString("id");
+               String terminalID = resultset.getString("terminalid");
+               String ptID = resultset.getString("punchtypeid");
+               String timeStamp = resultset.getString("timeStamp");
+               String atimeStamp = resultset.getString("adjustedTimeStamp");
+               String badgeID = resultset.getString("badgeId");
+               String eventData = resultset.getString("eventData");
+               String lunchFlag = resultset.getString("lunchFlag");
+               
+               int terminalIDint = Integer.parseInt(terminalID);
+               int eventID = Integer.parseInt(eventData);
+               long longTimeStamp= Long.parseLong(timeStamp);
+               
+               punchQuery = new Punch(badgeID, terminalIDint, eventID, longTimeStamp);
+           }
+       }
+       
+       catch(Exception e){
+           
+           System.err.println(e.toString());
+           
+       }
+       
+       return punchQuery;
    }
 }

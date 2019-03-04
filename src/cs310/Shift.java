@@ -44,7 +44,7 @@ public class Shift {
                     
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -60,23 +60,23 @@ public class Shift {
         return dock;
     }
 
-    public LocalTime getStart() {
+    public Time getStart() {
         return start;
     }
 
-    public LocalTime getStop() {
+    public Time getStop() {
         return stop;
     }
 
-    public LocalTime getLunchStart() {
+    public Time getLunchStart() {
         return lunchStart;
     }
 
-    public LocalTime getLunchStop() {
+    public Time getLunchStop() {
         return lunchStop;
     }
 
-    public LocalTime getLunchDeduct() {
+    public int getLunchDeduct() {
         return lunchDeduct;
     }
 

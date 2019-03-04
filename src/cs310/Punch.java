@@ -33,7 +33,7 @@ public class Punch {
     }
     
     //This method will print the original time stamp based on what type of punch employee makes. 
-    public String printOriginalTimeStamp(){
+    public String printOriginalTimestamp(){
         String punch = null;
         cal = new GregorianCalendar();
         cal.setTimeInMillis(timeStamp);
@@ -54,7 +54,7 @@ public class Punch {
         return punch.toUpperCase();
     }
     
-    public String printAdjustedTimeStamp(){
+    public String printAdjustedTimestamp(){
         String punch = null;
         cal = new GregorianCalendar();
         cal.setTimeInMillis(timeStamp);

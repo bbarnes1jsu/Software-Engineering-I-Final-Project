@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class Punch {
     
-    public Punch(){} //made this for my get method - Damien
     
     GregorianCalendar cal = new GregorianCalendar();
     
@@ -22,9 +21,10 @@ public class Punch {
     private String eventData;
     private boolean lunchFlag = false;
     
+    //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid, long timeStamp){
         
-        this.badgeId = badge.getId();
+        this.badgeId = badge.getID();
         this.punchtypeid = punchtypeid;
         this.id = id;
         this.terminalid = terminalid;
@@ -32,6 +32,7 @@ public class Punch {
         
     }
     
+    //This method will print the original time stamp based on what type of punch employee makes. 
     public String printOriginalTimeStamp(){
         String punch = null;
         cal = new GregorianCalendar();

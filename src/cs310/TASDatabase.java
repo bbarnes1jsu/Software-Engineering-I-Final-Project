@@ -13,14 +13,17 @@ package cs310;
 import java.sql.*;
 import java.util.*;
 import org.json.simple.*;
+import java.text.DateFormat;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 
 public class TASDatabase{
     
     //Objects for get methods
-    private Punch punchQuery = new Punch();
-    private Badge badgeQuery = new Badge();
-    private Shift shiftQuery = new Shift(); 
+    //private Punch punchQuery = new Punch();
+    //private Badge badgeQuery = new Badge();
+    //private Shift shiftQuery = new Shift(); 
     
     Connection conn;
     ResultSet resultset;
@@ -108,7 +111,8 @@ public class TASDatabase{
                String badgeid = resultset.getString("id");
                String badgeDesc = resultset.getString("description");
                
-               badgeQuery = new Badge(badgeid, badgeDesc);
+               Badge badgeQuery = new Badge(badgeid, badgeDesc);
+               return badgeQuery;
         }
            
        }
@@ -118,7 +122,7 @@ public class TASDatabase{
            
        }
        
-       return badgeQuery;
+       return null;
        
    }
    
@@ -140,7 +144,9 @@ public class TASDatabase{
                String lunchStop = resultset.getString("lunchStop");
                String lunchDeduct = resultset.getString("lunchDeduct");
                
-               shiftQuery = new Shift(id, description, gp, dock, start, stop, lunchStart, lunchStop, lunchDeduct);
+               
+             
+               Shift shiftQuery = new Shift(id, description, start, stop,);
                
                
            }
@@ -166,7 +172,7 @@ public class TASDatabase{
                resultset.next();
                String shiftid = resultset.getString("shiftid");
                
-               shiftQuery = getShift(shiftid); 
+               Shift shiftQuery = getShift(shiftid); 
            }
        }
        
@@ -196,12 +202,13 @@ public class TASDatabase{
                String eventData = resultset.getString("eventData");
                String lunchFlag = resultset.getString("lunchFlag");
                
-               Badge badge = Badge(badgeID);
+               Badge badge = getBadge(badgeID);
                int terminalIDint = Integer.parseInt(terminalID);
                int eventID = Integer.parseInt(eventData);
                long longTimeStamp= Long.parseLong(timeStamp);
                
-               punchQuery = new Punch(badgeID, terminalIDint, eventID, longTimeStamp);
+               Punch punchQuery = new Punch(badge, terminalIDint, eventID, longTimeStamp);
+               return punchQuery;
            }
        }
        
@@ -211,6 +218,6 @@ public class TASDatabase{
            
        }
        
-       return punchQuery;
+       return null;
    }
 }

@@ -196,6 +196,7 @@ public class TASDatabase{
                String eventData = resultset.getString("eventData");
                String lunchFlag = resultset.getString("lunchFlag");
                
+               Badge badge = Badge(badgeID);
                int terminalIDint = Integer.parseInt(terminalID);
                int eventID = Integer.parseInt(eventData);
                long longTimeStamp= Long.parseLong(timeStamp);

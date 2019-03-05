@@ -22,7 +22,7 @@ public class Punch {
     private boolean lunchFlag = false;
     
     //Constructor
-    public Punch(Badge badge,int terminalid,int punchtypeid, long timeStamp){
+    public Punch(Badge badge,int terminalid,int punchtypeid){
         
         this.badgeId = badge.getID();
         this.punchtypeid = punchtypeid;

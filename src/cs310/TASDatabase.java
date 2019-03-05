@@ -199,21 +199,18 @@ public class TASDatabase{
            ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE id=' " + idString +" '" );
            if (resultset != null){
                resultset.next();
-               String id = resultset.getString("id");
-               String terminalID = resultset.getString("terminalid");
-               String ptID = resultset.getString("punchtypeid");
-               String timeStamp = resultset.getString("timeStamp");
+               int id = resultset.getInt("id");
+               int terminalID = resultset.getInt("terminalid");
+               int ptID = resultset.getInt("punchtypeid");
+               long timeStamp = resultset.getLong("timeStamp");
                String atimeStamp = resultset.getString("adjustedTimeStamp");
                String badgeID = resultset.getString("badgeId");
                String eventData = resultset.getString("eventData");
                String lunchFlag = resultset.getString("lunchFlag");
                
                Badge badge = getBadge(badgeID);
-               int terminalIDint = Integer.parseInt(terminalID);
-               int eventID = Integer.parseInt(eventData);
-               long longTimeStamp= Long.parseLong(timeStamp);
                
-               punchQuery = new Punch(badge, terminalIDint, eventID, longTimeStamp);
+               punchQuery = new Punch(badge, terminalID, ptID);
            }
        }
        

@@ -103,6 +103,8 @@ public class TASDatabase{
     
    public Badge getBadge(String id){
        
+       Badge badgeQuery = null;
+
        //Query for badge info
        try{
            ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =' " + id + " ' ");
@@ -111,8 +113,7 @@ public class TASDatabase{
                String badgeid = resultset.getString("id");
                String badgeDesc = resultset.getString("description");
                
-               Badge badgeQuery = new Badge(badgeid, badgeDesc);
-               return badgeQuery;
+               badgeQuery = new Badge(badgeid, badgeDesc);
         }
            
        }
@@ -122,12 +123,13 @@ public class TASDatabase{
            
        }
        
-       return null;
+       return badgeQuery;
        
    }
    
    public Shift getShift(int shiftid){
        
+       Shift shiftQuery = null;
        String shiftidString = Integer.toString(shiftid);
        
        try{
@@ -136,18 +138,16 @@ public class TASDatabase{
                resultset.next();
                String id = resultset.getString("id");
                String description = resultset.getString("description");
-               String gp = resultset.getString("gracePeriod");
-               String dock = resultset.getString("dock");
-               String start = resultset.getString("start");
-               String stop = resultset.getString("stop");
-               String lunchStart = resultset.getString("lunchStart");
-               String lunchStop = resultset.getString("lunchStop");
-               String lunchDeduct = resultset.getString("lunchDeduct");
+               int gp = resultset.getInt("gracePeriod");
+               int dock = resultset.getInt("dock");
+               Time start = resultset.getTime("start");
+               Time stop = resultset.getTime("stop");
+               Time lunchStart = resultset.getTime("lunchStart");
+               Time lunchStop = resultset.getTime("lunchStop");
+               int lunchDeduct = resultset.getInt("lunchDeduct");
+               int interval = resultset.getInt("interval");
                
-               
-             
-               Shift shiftQuery = new Shift(id, description, start, stop,);
-               
+               shiftQuery = new Shift(id, description, start, stop, interval, gp, dock, lunchStart, lunchStop, lunchDeduct);
                
            }
         }
@@ -165,14 +165,19 @@ public class TASDatabase{
    
    public Shift getShift(Badge badge){
        
+       Shift shiftQuery = null;
+       String badgeid = badge.getID();
+       
        try {
            ResultSet resultset = stmt.executeQuery("SELECT * FROM employee WHERE badgeid=' " + badgeid + " ' ");
            if (resultset != null){
                
                resultset.next();
                String shiftid = resultset.getString("shiftid");
+               int intshiftID = Integer.parseInt(shiftid); 
                
-               Shift shiftQuery = getShift(shiftid); 
+               shiftQuery = getShift(intshiftID); 
+               
            }
        }
        
@@ -187,6 +192,7 @@ public class TASDatabase{
    
    public Punch getPunch(int punchid){
        
+       Punch punchQuery = null;
        String idString = Integer.toString(punchid);
        
        try{
@@ -207,8 +213,7 @@ public class TASDatabase{
                int eventID = Integer.parseInt(eventData);
                long longTimeStamp= Long.parseLong(timeStamp);
                
-               Punch punchQuery = new Punch(badge, terminalIDint, eventID, longTimeStamp);
-               return punchQuery;
+               punchQuery = new Punch(badge, terminalIDint, eventID, longTimeStamp);
            }
        }
        
@@ -218,6 +223,6 @@ public class TASDatabase{
            
        }
        
-       return null;
+       return punchQuery;
    }
 }

@@ -16,7 +16,7 @@ public class Punch {
     private int punchtypeid;
     private int id;
     private long timeStamp;
-    //private long adjustedTimeStamp = 0;
+    private long adjustedTimeStamp = 0;
     private String badgeId;
     //private String eventData;
     //private boolean lunchFlag = false;

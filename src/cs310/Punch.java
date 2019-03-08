@@ -16,10 +16,10 @@ public class Punch {
     private int punchtypeid;
     private int id;
     private long timeStamp = 0;
-    private long adjustedTimeStamp = 0;
+    //private long adjustedTimeStamp = 0;
     private String badgeId;
-    private String eventData;
-    private boolean lunchFlag = false;
+    //private String eventData;
+    //private boolean lunchFlag = false;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -72,7 +72,7 @@ public class Punch {
             default:
                 break;
         }
-        return punch.toUpperCase() + " ("+eventData+")";
+        return punch.toUpperCase(); // + " ("+eventData+")" taken out
     }
     
     public String getBadgeId(){
@@ -91,17 +91,17 @@ public class Punch {
         return timeStamp;
     }
     
-    public String getPunchData(){
+    /*public String getPunchData(){
         return eventData;
-    }
+    }*/
     
-    public long getAdjustedTimeStamp(){
+    /*public long getAdjustedTimeStamp(){
         return adjustedTimeStamp;
-    }
+    }*/
     
-    public boolean getLunchFlag(){
+    /*public boolean getLunchFlag(){
         return lunchFlag;
-    }
+    }*/
     
 }
 

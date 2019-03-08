@@ -107,7 +107,7 @@ public class TASDatabase{
 
        //Query for badge info
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =' " + id + " ' ");
+           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =" + id);
            if (resultset != null){
                resultset.next();
                String badgeid = resultset.getString("id");
@@ -124,6 +124,7 @@ public class TASDatabase{
        }
        
        return badgeQuery;
+
        
    }
    
@@ -134,6 +135,10 @@ public class TASDatabase{
        
        try{
            ResultSet resultset = stmt.executeQuery("SELECT * FROM shift WHERE id=" + shiftidString); 
+           /*ResultSet resultset = "INSERT INTO people (firstname, lastname) VALUES (?, ?)";
+                pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                pstUpdate.setString(1, newFirstName);
+                pstUpdate.setString(2, newLastName);*/
            if (resultset != null){
                resultset.next();
                String id = resultset.getString("id");
@@ -196,17 +201,14 @@ public class TASDatabase{
        String idString = Integer.toString(punchid);
        
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE id=' " + idString +" '" );
+           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM punch WHERE id=' " + idString +" '" );
            if (resultset != null){
                resultset.next();
                int id = resultset.getInt("id");
                int terminalID = resultset.getInt("terminalid");
                int ptID = resultset.getInt("punchtypeid");
-               long timeStamp = resultset.getLong("timeStamp");
-               String atimeStamp = resultset.getString("adjustedTimeStamp");
+               String timeStamp = resultset.getString("originaltimestamp");
                String badgeID = resultset.getString("badgeId");
-               String eventData = resultset.getString("eventData");
-               String lunchFlag = resultset.getString("lunchFlag");
                
                Badge badge = getBadge(badgeID);
                

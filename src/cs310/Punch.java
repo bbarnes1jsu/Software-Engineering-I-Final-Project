@@ -55,26 +55,6 @@ public class Punch {
     public void adjust(Shift s){
         
     }
-    /*public String printAdjustedTimestamp(){
-        String punch = null;
-        cal = new GregorianCalendar();
-        cal.setTimeInMillis(timeStamp);
-        
-        switch (punchtypeid) {
-            case 0:
-                punch = "#" + badgeId + "CLOCKED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            case 1:
-                punch = "#" + badgeId + "CLOCKED IN: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            case 2:
-                punch = "#" + badgeId + "TIMED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            default:
-                break;
-        }
-        return punch.toUpperCase(); // + " ("+eventData+")" taken out
-    }*/
     
     public String getBadgeId(){
         return badgeId;

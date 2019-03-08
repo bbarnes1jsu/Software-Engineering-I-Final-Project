@@ -18,8 +18,6 @@ public class Punch {
     private long timeStamp;
     private long adjustedTimeStamp;
     private String badgeId;
-    //private String eventData;
-    //private boolean lunchFlag = false;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -54,25 +52,8 @@ public class Punch {
         return punch.toUpperCase();
     }
     
-    public String printAdjustedTimestamp(){
-        String punch = null;
-        cal = new GregorianCalendar();
-        cal.setTimeInMillis(timeStamp);
+    public void adjust(Shift s){
         
-        switch (punchtypeid) {
-            case 0:
-                punch = "#" + badgeId + "CLOCKED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            case 1:
-                punch = "#" + badgeId + "CLOCKED IN: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            case 2:
-                punch = "#" + badgeId + "TIMED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
-                break;
-            default:
-                break;
-        }
-        return punch.toUpperCase(); // + " ("+eventData+")" taken out
     }
     
     public String getBadgeId(){
@@ -91,17 +72,9 @@ public class Punch {
         return timeStamp;
     }
     
-    /*public String getPunchData(){
-        return eventData;
-    }*/
-    
-    /*public long getAdjustedTimeStamp(){
+    public long getAdjustedTimeStamp(){
         return adjustedTimeStamp;
-    }*/
-    
-    /*public boolean getLunchFlag(){
-        return lunchFlag;
-    }*/
+    }
     
 }
 

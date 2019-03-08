@@ -15,7 +15,7 @@ public class Punch {
     private int terminalid;
     private int punchtypeid;
     private int id;
-    private long timeStamp = 0;
+    private long timeStamp;
     //private long adjustedTimeStamp = 0;
     private String badgeId;
     //private String eventData;
@@ -40,13 +40,13 @@ public class Punch {
         
         switch (punchtypeid) {
             case 0:
-                punch = "#" + badgeId + "CLOCKED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " CLOCKED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             case 1:
-                punch = "#" + badgeId + "CLOCKED IN: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " CLOCKED IN: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             case 2:
-                punch = "#" + badgeId + "TIMED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " TIMED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             default:
                 break;

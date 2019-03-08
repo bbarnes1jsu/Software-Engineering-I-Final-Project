@@ -26,8 +26,6 @@ public class TASDatabase{
     //private Shift shiftQuery = new Shift(); 
     
     Connection conn;
-    ResultSet resultset;
-    ResultSetMetaData metadata;
     Statement stmt;
 
     public TASDatabase(){
@@ -104,17 +102,75 @@ public class TASDatabase{
    public Badge getBadge(String id){
        
        Badge badgeQuery = null;
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
 
        //Query for badge info
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =" + id);
-           if (resultset != null){
-               resultset.next();
-               String badgeid = resultset.getString("id");
-               String badgeDesc = resultset.getString("description");
+           
+           if (conn.isValid(0)){
                
-               badgeQuery = new Badge(badgeid, badgeDesc);
-        }
+               // Prepare Select Query
+               query = "SELECT * FROM badge WHERE id = ?";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, id);
+               
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
+               
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            /* Begin Next ResultSet Row */
+
+                            System.out.println();
+                            
+                            /* Loop Through ResultSet Columns; Print Values */
+
+                            String badgeID = resultset.getString("id");
+                            String description = resultset.getString("description");
+                            
+                            badgeQuery = new Badge(badgeID, description);
+
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                } 
+           
+            }
            
        }
        catch(Exception e){
@@ -122,6 +178,16 @@ public class TASDatabase{
            System.err.println(e.toString());
            
        }
+       
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
        
        return badgeQuery;
 
@@ -135,10 +201,6 @@ public class TASDatabase{
        
        try{
            ResultSet resultset = stmt.executeQuery("SELECT * FROM shift WHERE id=" + shiftidString); 
-           /*ResultSet resultset = "INSERT INTO people (firstname, lastname) VALUES (?, ?)";
-                pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                pstUpdate.setString(1, newFirstName);
-                pstUpdate.setString(2, newLastName);*/
            if (resultset != null){
                resultset.next();
                String id = resultset.getString("id");
@@ -173,55 +235,193 @@ public class TASDatabase{
        Shift shiftQuery = null;
        String badgeid = badge.getID();
        
-       try {
-           ResultSet resultset = stmt.executeQuery("SELECT * FROM employee WHERE badgeid=' " + badgeid + " ' ");
-           if (resultset != null){
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
+
+       //Query for badge info
+       try{
+           
+           if (conn.isValid(0)){
                
-               resultset.next();
-               String shiftid = resultset.getString("shiftid");
-               int intshiftID = Integer.parseInt(shiftid); 
+               // Prepare Select Query
+               query = "SELECT * FROM employee WHERE badgeid = ?";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, badgeid);
                
-               shiftQuery = getShift(intshiftID); 
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
                
-           }
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            /* Begin Next ResultSet Row */
+
+                            System.out.println();
+                            
+                            /* Loop Through ResultSet Columns; Print Values */
+
+                            int shiftID = resultset.getInt("shiftid");
+                            
+                            shiftQuery = getShift(shiftID);
+
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                } 
+           
+            }
+           
        }
-       
        catch(Exception e){
            
            System.err.println(e.toString());
            
        }
        
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
+       
        return shiftQuery;
+       
    }
    
    public Punch getPunch(int punchid){
        
        Punch punchQuery = null;
-       String idString = Integer.toString(punchid);
-       
+       String id = Integer.toString(punchid);
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
+
+       //Query for badge info
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM punch WHERE id=' " + idString +" '" );
-           if (resultset != null){
-               resultset.next();
-               int id = resultset.getInt("id");
-               int terminalID = resultset.getInt("terminalid");
-               int ptID = resultset.getInt("punchtypeid");
-               String timeStamp = resultset.getString("originaltimestamp");
-               String badgeID = resultset.getString("badgeId");
+           
+           if (conn.isValid(0)){
                
-               Badge badge = getBadge(badgeID);
+               // Prepare Select Query
+               query = "SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM punch WHERE id = ?";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, id);
                
-               punchQuery = new Punch(badge, terminalID, ptID);
-           }
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
+               
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            /* Begin Next ResultSet Row */
+
+                            System.out.println();
+                            
+                            /* Loop Through ResultSet Columns; Print Values */
+
+                        //int getid = resultset.getInt("id");
+                        int terminalID = resultset.getInt("terminalid");
+                        int ptID = resultset.getInt("punchtypeid");
+                        String timeStamp = resultset.getString("originaltimestamp");
+                        String badgeID = resultset.getString("badgeId");
+
+                        Badge badge = getBadge(badgeID);
+
+                        punchQuery = new Punch(badge, terminalID, ptID);
+
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                } 
+           
+            }
+           
        }
-       
        catch(Exception e){
            
            System.err.println(e.toString());
            
        }
        
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
+       
        return punchQuery;
+       
    }
 }

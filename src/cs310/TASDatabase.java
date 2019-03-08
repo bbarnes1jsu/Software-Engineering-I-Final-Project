@@ -13,14 +13,17 @@ package cs310;
 import java.sql.*;
 import java.util.*;
 import org.json.simple.*;
+import java.text.DateFormat;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 
 public class TASDatabase{
     
     //Objects for get methods
-    private Punch punchQuery = new Punch();
-    private Badge badgeQuery = new Badge();
-    private Shift shiftQuery = new Shift(); 
+    //private Punch punchQuery = new Punch();
+    //private Badge badgeQuery = new Badge();
+    //private Shift shiftQuery = new Shift(); 
     
     Connection conn;
     ResultSet resultset;
@@ -100,14 +103,17 @@ public class TASDatabase{
     
    public Badge getBadge(String id){
        
+       Badge badgeQuery = null;
+
        //Query for badge info
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =' " + id + " ' ");
+           ResultSet resultset = stmt.executeQuery("SELECT * FROM badge WHERE id =" + id);
            if (resultset != null){
                resultset.next();
                String badgeid = resultset.getString("id");
+               String badgeDesc = resultset.getString("description");
                
-               badgeQuery = new Badge(badgeID);
+               badgeQuery = new Badge(badgeid, badgeDesc);
         }
            
        }
@@ -118,29 +124,35 @@ public class TASDatabase{
        }
        
        return badgeQuery;
+
        
    }
    
    public Shift getShift(int shiftid){
        
+       Shift shiftQuery = null;
        String shiftidString = Integer.toString(shiftid);
        
        try{
            ResultSet resultset = stmt.executeQuery("SELECT * FROM shift WHERE id=" + shiftidString); 
+           /*ResultSet resultset = "INSERT INTO people (firstname, lastname) VALUES (?, ?)";
+                pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                pstUpdate.setString(1, newFirstName);
+                pstUpdate.setString(2, newLastName);*/
            if (resultset != null){
                resultset.next();
                String id = resultset.getString("id");
                String description = resultset.getString("description");
-               String gp = resultset.getString("gracePeriod");
-               String dock = resultset.getString("dock");
-               String start = resultset.getString("start");
-               String stop = resultset.getString("stop");
-               String lunchStart = resultset.getString("lunchStart");
-               String lunchStop = resultset.getString("lunchStop");
-               String lunchDeduct = resultset.getString("lunchDeduct");
+               int gp = resultset.getInt("gracePeriod");
+               int dock = resultset.getInt("dock");
+               Time start = resultset.getTime("start");
+               Time stop = resultset.getTime("stop");
+               Time lunchStart = resultset.getTime("lunchStart");
+               Time lunchStop = resultset.getTime("lunchStop");
+               int lunchDeduct = resultset.getInt("lunchDeduct");
+               int interval = resultset.getInt("interval");
                
-               shiftQuery = new Shift(id, description, gp, dock, start, stop, lunchStart, lunchStop, lunchDeduct);
-               
+               shiftQuery = new Shift(id, description, start, stop, interval, gp, dock, lunchStart, lunchStop, lunchDeduct);
                
            }
         }
@@ -158,14 +170,19 @@ public class TASDatabase{
    
    public Shift getShift(Badge badge){
        
+       Shift shiftQuery = null;
+       String badgeid = badge.getID();
+       
        try {
            ResultSet resultset = stmt.executeQuery("SELECT * FROM employee WHERE badgeid=' " + badgeid + " ' ");
            if (resultset != null){
                
                resultset.next();
                String shiftid = resultset.getString("shiftid");
+               int intshiftID = Integer.parseInt(shiftid); 
                
-               shiftQuery = getShift(shiftid); 
+               shiftQuery = getShift(intshiftID); 
+               
            }
        }
        
@@ -180,26 +197,22 @@ public class TASDatabase{
    
    public Punch getPunch(int punchid){
        
+       Punch punchQuery = null;
        String idString = Integer.toString(punchid);
        
        try{
-           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM event WHERE id=' " + idString +" '" );
+           ResultSet resultset = stmt.executeQuery("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM punch WHERE id=' " + idString +" '" );
            if (resultset != null){
                resultset.next();
-               String id = resultset.getString("id");
-               String terminalID = resultset.getString("terminalid");
-               String ptID = resultset.getString("punchtypeid");
-               String timeStamp = resultset.getString("timeStamp");
-               String atimeStamp = resultset.getString("adjustedTimeStamp");
+               int id = resultset.getInt("id");
+               int terminalID = resultset.getInt("terminalid");
+               int ptID = resultset.getInt("punchtypeid");
+               String timeStamp = resultset.getString("originaltimestamp");
                String badgeID = resultset.getString("badgeId");
-               String eventData = resultset.getString("eventData");
-               String lunchFlag = resultset.getString("lunchFlag");
                
-               int terminalIDint = Integer.parseInt(terminalID);
-               int eventID = Integer.parseInt(eventData);
-               long longTimeStamp= Long.parseLong(timeStamp);
+               Badge badge = getBadge(badgeID);
                
-               punchQuery = new Punch(badgeID, terminalIDint, eventID, longTimeStamp);
+               punchQuery = new Punch(badge, terminalID, ptID);
            }
        }
        

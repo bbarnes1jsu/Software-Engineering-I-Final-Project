@@ -18,11 +18,9 @@ public class Punch {
     private long timeStamp = 0;
     private long adjustedTimeStamp = 0;
     private String badgeId;
-    private String eventData;
-    private boolean lunchFlag = false;
     
     //Constructor
-    public Punch(Badge badge,int terminalid,int punchtypeid, long timeStamp){
+    public Punch(Badge badge,int terminalid,int punchtypeid){
         
         this.badgeId = badge.getID();
         this.punchtypeid = punchtypeid;
@@ -54,7 +52,10 @@ public class Punch {
         return punch.toUpperCase();
     }
     
-    public String printAdjustedTimestamp(){
+    public void adjust(Shift s){
+        
+    }
+    /*public String printAdjustedTimestamp(){
         String punch = null;
         cal = new GregorianCalendar();
         cal.setTimeInMillis(timeStamp);
@@ -72,8 +73,8 @@ public class Punch {
             default:
                 break;
         }
-        return punch.toUpperCase() + " ("+eventData+")";
-    }
+        return punch.toUpperCase(); // + " ("+eventData+")" taken out
+    }*/
     
     public String getBadgeId(){
         return badgeId;
@@ -91,16 +92,8 @@ public class Punch {
         return timeStamp;
     }
     
-    public String getPunchData(){
-        return eventData;
-    }
-    
     public long getAdjustedTimeStamp(){
         return adjustedTimeStamp;
-    }
-    
-    public boolean getLunchFlag(){
-        return lunchFlag;
     }
     
 }

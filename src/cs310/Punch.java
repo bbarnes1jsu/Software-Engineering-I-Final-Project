@@ -14,7 +14,7 @@ public class Punch {
     
     private int terminalid;
     private int punchtypeid;
-    private int id;
+    //private int id;
     private long timeStamp;
     private long adjustedTimeStamp;
     private String badgeId;
@@ -24,10 +24,8 @@ public class Punch {
         
         this.badgeId = badge.getID();
         this.punchtypeid = punchtypeid;
-        this.id = id;
-        this.terminalid = terminalid;
-        this.timeStamp = timeStamp;
-        
+        //this.id = id;
+        this.terminalid = terminalid;        
     }
     
     //This method will print the original time stamp based on what type of punch employee makes. 
@@ -76,6 +74,9 @@ public class Punch {
         return adjustedTimeStamp;
     }
     
+    public void setTimeStamp(long newTimeStamp){
+        timeStamp = newTimeStamp;
+    }
 }
 
 

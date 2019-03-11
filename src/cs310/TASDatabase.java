@@ -342,7 +342,7 @@ public class TASDatabase{
            if (conn.isValid(0)){
                
                // Prepare Select Query
-               query = "SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS 'timestamp' FROM punch WHERE id = ?";
+               query = "SELECT *, UNIX_TIMESTAMP(`ORIGINALTIMESTAMP`) * 1000 AS ts FROM punch WHERE id = ?";
                pstSelect = conn.prepareStatement(query);
                pstSelect.setString(1, id);
                
@@ -375,12 +375,15 @@ public class TASDatabase{
                         //int getid = resultset.getInt("id");
                         int terminalID = resultset.getInt("terminalid");
                         int ptID = resultset.getInt("punchtypeid");
-                        String timeStamp = resultset.getString("originaltimestamp");
+                        long timeStamp = resultset.getLong("originaltimestamp");
                         String badgeID = resultset.getString("badgeId");
 
                         Badge badge = getBadge(badgeID);
 
                         punchQuery = new Punch(badge, terminalID, ptID);
+                        punchQuery.setTimeStamp(timeStamp); 
+                        
+                        System.out.println(punchQuery.getOriginalTimeStamp());
 
                         }
                         

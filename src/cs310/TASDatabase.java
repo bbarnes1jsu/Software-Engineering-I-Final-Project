@@ -375,7 +375,7 @@ public class TASDatabase{
                         //int getid = resultset.getInt("id");
                         int terminalID = resultset.getInt("terminalid");
                         int ptID = resultset.getInt("punchtypeid");
-                        long timeStamp = resultset.getLong("originaltimestamp");
+                        long timeStamp = resultset.getLong("ts");
                         String badgeID = resultset.getString("badgeId");
 
                         Badge badge = getBadge(badgeID);

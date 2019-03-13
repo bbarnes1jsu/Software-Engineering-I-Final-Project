@@ -427,4 +427,7 @@ public class TASDatabase{
        return punchQuery;
        
    }
+   public int insertPunch(Punch p){
+       
+   }
 }

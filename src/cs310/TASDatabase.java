@@ -427,4 +427,12 @@ public class TASDatabase{
        return punchQuery;
        
    }
+   
+   public int insertPunch(Punch p){
+       return 0; //Get rid of this later
+   }
+   
+   public void getDailyPunchList(Badge b, Long t){
+       
+   }
 }

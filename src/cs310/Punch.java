@@ -79,6 +79,12 @@ public class Punch {
         
         startDock.setTimeInMillis(shiftStartInMillis);
         
+        lunchStart.setTimeInMillis(originalTimeStampInMillis);
+        lunchStart.set(Calendar.HOUR_OF_DAY, s.getLunchStart().getHours());
+        lunchStart.set(Calendar.MINUTE, s.getLunchStart().getMinutes());
+        lunchStart.set(Calendar.SECOND, 0);
+        long lunchStartInMillis = lunchStart.getTimeInMillis();
+        
         shiftStop.setTimeInMillis(originalTimeStampInMillis);
         shiftStop.set(Calendar.HOUR_OF_DAY,s.getStop().getHours());
         shiftStop.set(Calendar.MINUTE, s.getStop().getMinutes());
@@ -90,6 +96,12 @@ public class Punch {
         stopGrace.setTimeInMillis(shiftStopInMillis);
         
         stopDock.setTimeInMillis(shiftStopInMillis);
+        
+        lunchStop.setTimeInMillis(shiftStopInMillis);
+        lunchStop.set(Calendar.HOUR_OF_DAY, s.getLunchStop().getHours());
+        lunchStop.set(Calendar.MINUTE, s.getLunchStop().getMinutes());
+        lunchStop.set(Calendar.SECOND, 0);
+        long lunchStopInMillis = lunchStop.getTimeInMillis();
     }
     public String printAdjustedTimestamp(){
         

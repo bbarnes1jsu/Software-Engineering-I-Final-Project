@@ -35,13 +35,13 @@ public class Feature2 {
 		
         /* Get Punch Properties */
         
-        String badgeid = p1.getBadgeid();
+        String badgeid = p1.getBadgeId();
         
-        ots.setTimeInMillis(p1.getOriginaltimestamp());
+        ots.setTimeInMillis(p1.getOriginalTimeStamp());
         String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime());
         
-        int terminalid = p1.getTerminalid();
-        int eventtypeid = p1.getPunchtypeid();
+        int terminalid = p1.getTerminalId();
+        int eventtypeid = p1.getPunchTypeId();
 		
         /* Insert Punch Into Database */
         
@@ -53,13 +53,13 @@ public class Feature2 {
 		
         /* Compare Punches */
 
-        assertEquals(badgeid, p2.getBadgeid());
+        assertEquals(badgeid, p2.getBadgeId());
 
-        rts.setTimeInMillis(p2.getOriginaltimestamp());
+        rts.setTimeInMillis(p2.getOriginalTimeStamp());
         
         assertEquals(originaltimestamp, (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(rts.getTime()));
-        assertEquals(terminalid, p2.getTerminalid());
-        assertEquals(eventtypeid, p2.getPunchtypeid());
+        assertEquals(terminalid, p2.getTerminalId());
+        assertEquals(eventtypeid, p2.getPunchTypeId());
         
     }
     

@@ -429,75 +429,63 @@ public class TASDatabase{
    }
    
    public int insertPunch(Punch p){
-    
-    PreparedStatement pstSelect = null, pstUpdate = null;
-    ResultSet resultset = null;
-    String query;
-    int updateCount = 0;
-    Punch punch = p;
-                   
-    int id = 0;
-    Long ts = punch.getOriginalTimeStamp();
-    int punchTypeId = punch.getPunchTypeId();
-    String badgeId = punch.getBadgeId();
-    int terminalid = punch.getTerminalId();
-                    
-    try{ 
-                             
-        String url = "jdbc:mysql://localhost/tas";
-        String username = "teamc";
-        String password = "cs310";
+        PreparedStatement pstSelect = null, pstUpdate = null;
+        ResultSet resultset = null;
+        String query;
+        int updateCount = 0;
+        Punch punch = p;
+
+        int id = 0;
+        Long timeStamp = punch.getOriginalTimeStamp();
+        int punchTypeId = punch.getPunchTypeId();
+        String badgeId = punch.getBadgeId();
+        int terminalid = punch.getTerminalId();
+
+        try{
+            
+            if (conn.isValid(0)){
+                Statement stmt = conn.createStatement( );
+
+                query = "INSERT INTO punch ( badgeid, terminalid, originaltimestamp, punchtypeid) VALUES (?, ?, ?, ?)";
+                pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+                pstUpdate.setString(1,badgeId);
+                pstUpdate.setInt(2, terminalid);                        
+                pstUpdate.setLong(3,timeStamp);
+                pstUpdate.setInt(4,punchTypeId);
+
+               
+                updateCount = pstUpdate.executeUpdate();
+                if (updateCount > 0) {
+                    resultset = pstUpdate.getGeneratedKeys();
+                }
                 
-          
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
-        conn = DriverManager.getConnection(url, username, password);
-                           
-                               
-        Statement stmt = conn.createStatement( );
-                              
-        query = "INSERT INTO punch ( badgeid, terminalid, originaltimestamp, punchtypeid) VALUES (?, ?, ?, ?)";
-        pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                     
-        pstUpdate.setString(1,badgeId);
-        pstUpdate.setInt(2, terminalid);                        
-        pstUpdate.setLong(3,ts);
-        pstUpdate.setInt(4,punchTypeId);
-                               
+                ResultSet result = stmt.executeQuery("SELECT * FROM punch ORDER BY id DESC limit 1;");
+                
+                if (result != null){
+                    result.next();
+                    id = result.getInt("id");
+                }
+            }
+        }
 
-        updateCount = pstUpdate.executeUpdate();
-        if (updateCount > 0) {
-            
-            resultset = pstUpdate.getGeneratedKeys();
-                                    
+        catch (Exception e){
+        System.err.println(e.toString());
+        }
+
+        finally {
+
+        if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+
+        if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+
+        if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
 
         }
-        ResultSet result = stmt.executeQuery("SELECT * FROM punch ORDER BY id DESC limit 1;");
-        if (result != null){
-            result.next();
-            id = result.getInt("id");
+        return id;
         }
-        conn.close( );
-                              
-    }
-                   
-    catch (Exception e){
-    System.err.println(e.toString());
-    }
-                   
-    finally {
-            
-    if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
-            
-    if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
-            
-                              if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
-            
-    }
-                   
-    return id;
-    }
-   
-   public void getDailyPunchList(Badge b, Long t){
-       
-   }
+
+       public void getDailyPunchList(Badge b, Long t){
+
+       }
 }

@@ -17,6 +17,7 @@ public class Punch {
     private long timeStamp = 0;
     private long adjustedTimeStamp = 0;
     private String badgeId;
+    private String intervalRound;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -74,10 +75,17 @@ public class Punch {
         long shiftStartInMillis = shiftStart.getTimeInMillis();
 
         startInterval.setTimeInMillis(shiftStartInMillis);
+        startInterval.add(Calendar.MINUTE, -s.getInterval());
+        long startIntervalInMillis = startInterval.getTimeInMillis();
         
         startGrace.setTimeInMillis(shiftStartInMillis);
+        startGrace.add(Calendar.MINUTE, s.getGracePeriod());
+        long startGraceTimeInMillis = startGrace.getTimeInMillis();
         
         startDock.setTimeInMillis(shiftStartInMillis);
+        
+        
+        
         
         lunchStart.setTimeInMillis(originalTimeStampInMillis);
         lunchStart.set(Calendar.HOUR_OF_DAY, s.getLunchStart().getHours());
@@ -92,16 +100,45 @@ public class Punch {
         long shiftStopInMillis = shiftStop.getTimeInMillis();
         
         stopInterval.setTimeInMillis(shiftStopInMillis);
+        stopInterval.add(Calendar.MINUTE, s.getInterval());
+        long stopIntervalTimeInMillis = stopInterval.getTimeInMillis();
         
         stopGrace.setTimeInMillis(shiftStopInMillis);
+        stopGrace.add(Calendar.MINUTE, -s.getGracePeriod());
+        long stopGraceTimeInMillis = stopGrace.getTimeInMillis();
         
         stopDock.setTimeInMillis(shiftStopInMillis);
+        
+        
         
         lunchStop.setTimeInMillis(shiftStopInMillis);
         lunchStop.set(Calendar.HOUR_OF_DAY, s.getLunchStop().getHours());
         lunchStop.set(Calendar.MINUTE, s.getLunchStop().getMinutes());
         lunchStop.set(Calendar.SECOND, 0);
         long lunchStopInMillis = lunchStop.getTimeInMillis();
+        
+        int interval = s.getInterval();
+        
+        if(shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || shiftStart.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+            
+            if(punchtypeid == 1){
+                if(originalTimeStampInMillis >= startIntervalInMillis && originalTimeStampInMillis <= shiftStartInMillis + (s.getInterval() * 60000)){
+                    intervalRound = "None";
+                }
+                else{
+                    if(cal.get(Calendar.MINUTE) % interval <= interval /2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    else{
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    intervalRound = "Interval Round";
+                }
+            }
+    
+        }
     }
     public String printAdjustedTimestamp(){
         

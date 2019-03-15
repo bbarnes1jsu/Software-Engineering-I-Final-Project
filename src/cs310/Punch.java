@@ -17,7 +17,7 @@ public class Punch {
     private long timeStamp = 0;
     private long adjustedTimeStamp = 0;
     private String badgeId;
-    private String intervalRound;
+    private String note;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -123,7 +123,7 @@ public class Punch {
             
             if(punchtypeid == 1){
                 if(originalTimeStampInMillis >= startIntervalInMillis && originalTimeStampInMillis <= shiftStartInMillis + (s.getInterval() * 60000)){
-                    intervalRound = "None";
+                    note = "None";
                 }
                 else{
                     if(cal.get(Calendar.MINUTE) % interval <= interval /2){
@@ -134,7 +134,7 @@ public class Punch {
                         cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
                         cal2.set(Calendar.SECOND, 0);
                     }
-                    intervalRound = "Interval Round";
+                    note = "Interval Round";
                 }
             }
     

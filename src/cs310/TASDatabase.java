@@ -14,8 +14,8 @@ import java.sql.*;
 import java.util.*;
 import org.json.simple.*;
 import java.text.DateFormat;
-import java.util.Date;
 import java.text.SimpleDateFormat;
+
 
 
 public class TASDatabase{
@@ -432,7 +432,104 @@ public class TASDatabase{
        return 0; //Get rid of this later
    }
    
-   public void getDailyPunchList(Badge b, Long t){
+   public ArrayList getDailyPunchList(Badge b, Long ts){
        
+       String badgeid = b.getID();
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
+       
+        ArrayList dailyPunch = new ArrayList();
+        
+        //Initialize Gregorian Calendar
+        GregorianCalendar start = new GregorianCalendar();
+        start.set(Calendar.HOUR, 0);
+        start.set(Calendar.MINUTE, 0);
+        start.set(Calendar.SECOND, 0);
+
+        GregorianCalendar stop = new GregorianCalendar();
+        stop.set(Calendar.HOUR, 23);
+        stop.set(Calendar.MINUTE, 59);
+        stop.set(Calendar.SECOND, 59);
+       
+       
+       try{
+           
+           if (conn.isValid(0)){
+               
+               query = "SELECT * FROM badge WHERE UNIX_TIMESTAMP('ORIGINALTIMESTAMP') * 1000 >=  \"\n" +
+               "\"+ \"AND UNIX_TIMESTAMP('ORIGINALTIMESTAMP') * 1000  AND badgeid = ?";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, badgeid);
+               
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
+               
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            String[] row = new String[columnCount];
+                            for(int i=0; i < columnCount; i++){
+                                row[i] = resultset.getString(i +1);
+                            }
+                            
+                            dailyPunch.add(row);
+
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                }
+           }
+       }
+       
+       catch(Exception e){
+           
+           System.err.println(e.toString());
+           
+       }
+       
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
+       
+       return dailyPunch;
    }
 }

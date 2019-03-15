@@ -115,7 +115,7 @@ public class Feature2 {
         
         /* Compare Output Strings */
         
-        assertEquals( s1.toString(), s2.toString() );
+        assertEquals( s2.toString(), s1.toString() );
         
     }
     
@@ -171,7 +171,7 @@ public class Feature2 {
         
         /* Compare Output Strings */
         
-        assertEquals( s1.toString(), s2.toString() );
+        assertEquals( s2.toString(), s1.toString() );
         
     }
 
@@ -225,7 +225,7 @@ public class Feature2 {
         
         /* Compare Output Strings */
         
-        assertEquals( s1.toString(), s2.toString() );
+        assertEquals( s2.toString(), s1.toString() );
         
     }
     

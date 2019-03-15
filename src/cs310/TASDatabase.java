@@ -432,9 +432,11 @@ public class TASDatabase{
        return 0; //Get rid of this later
    }
    
-   public ArrayList getDailyPunchList(Badge b, Long ts){
+   public ArrayList<Punch> getDailyPunchList(Badge b, Long ts){
        
        String badgeid = b.getID();
+       int ID = 0;
+       
        boolean hasresults;
        ResultSet resultset = null;
        PreparedStatement pstSelect = null, pstUpdate = null;
@@ -445,25 +447,29 @@ public class TASDatabase{
         ArrayList dailyPunch = new ArrayList();
         
         //Initialize Gregorian Calendar
-        GregorianCalendar start = new GregorianCalendar();
-        start.set(Calendar.HOUR, 0);
-        start.set(Calendar.MINUTE, 0);
-        start.set(Calendar.SECOND, 0);
+        GregorianCalendar gc1 = new GregorianCalendar();
+        gc1.setTimeInMillis(ts);
+        gc1.set(Calendar.HOUR, 0);
+        gc1.set(Calendar.MINUTE, 0);
+        gc1.set(Calendar.SECOND, 0);
 
-        GregorianCalendar stop = new GregorianCalendar();
-        stop.set(Calendar.HOUR, 23);
-        stop.set(Calendar.MINUTE, 59);
-        stop.set(Calendar.SECOND, 59);
+        GregorianCalendar gc2 = new GregorianCalendar();
+        gc2.setTimeInMillis(ts);
+        gc2.set(Calendar.HOUR, 23);
+        gc2.set(Calendar.MINUTE, 59);
+        gc2.set(Calendar.SECOND, 59);
        
        
        try{
            
            if (conn.isValid(0)){
                
-               query = "SELECT * FROM badge WHERE UNIX_TIMESTAMP('ORIGINALTIMESTAMP') * 1000 >=  \"\n" +
-               "\"+ \"AND UNIX_TIMESTAMP('ORIGINALTIMESTAMP') * 1000  AND badgeid = ?";
+               query = "SELECT * FROM punch WHERE UNIX_TIMESTAMP('ORIGINALTIMESTAMP')*1000 AS ts WHERE badgeid = ? \n" +
+               "HAVING ts >= ? AND ts <= ? AND ORDER BY 'ORIGINALTIMESTAMP' ";
                pstSelect = conn.prepareStatement(query);
                pstSelect.setString(1, badgeid);
+               pstSelect.setLong(2, gc1.getTimeInMillis());
+               pstSelect.setLong(3, gc2.getTimeInMillis());
                
                //Execute Select Query
                System.out.println("Submitting Query...");
@@ -487,7 +493,8 @@ public class TASDatabase{
                             
                             String[] row = new String[columnCount];
                             for(int i=0; i < columnCount; i++){
-                                row[i] = resultset.getString(i +1);
+                            row[i] = resultset.getString(i+1);
+
                             }
                             
                             dailyPunch.add(row);
@@ -530,6 +537,6 @@ public class TASDatabase{
             
         }
        
-       return dailyPunch;
+       return dailyPunch; 
    }
 }

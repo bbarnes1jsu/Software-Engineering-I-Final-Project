@@ -14,8 +14,8 @@ import java.sql.*;
 import java.util.*;
 import org.json.simple.*;
 import java.text.DateFormat;
-import java.util.Date;
 import java.text.SimpleDateFormat;
+
 
 
 public class TASDatabase{
@@ -428,11 +428,168 @@ public class TASDatabase{
        
    }
    
-   public int insertPunch(Punch p){
-       return 0; //Get rid of this later
-   }
+    public int insertPunch(Punch p){
+        PreparedStatement pstSelect = null, pstUpdate = null;
+        ResultSet resultset = null;
+        String query;
+        int updateCount = 0;
+        Punch punch = p;
+
+        int id = 0;
+        Long timeStamp = punch.getOriginalTimeStamp();
+        int punchTypeId = punch.getPunchTypeId();
+        String badgeId = punch.getBadgeId();
+        int terminalid = punch.getTerminalId();
+
+        try{
+            
+            if (conn.isValid(0)){
+                Statement stmt = conn.createStatement( );
+
+                query = "INSERT INTO punch ( badgeid, terminalid, originaltimestamp, punchtypeid) VALUES (?, ?, ?, ?)";
+                pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+                pstUpdate.setString(1,badgeId);
+                pstUpdate.setInt(2, terminalid);                        
+                pstUpdate.setLong(3,timeStamp);
+                pstUpdate.setInt(4,punchTypeId);
+
+               
+                updateCount = pstUpdate.executeUpdate();
+                if (updateCount > 0) {
+                    resultset = pstUpdate.getGeneratedKeys();
+                }
+                
+                ResultSet result = stmt.executeQuery("SELECT * FROM punch ORDER BY id DESC limit 1;");
+                
+                if (result != null){
+                    result.next();
+                    id = result.getInt("id");
+                }
+            }
+        }
+
+        catch (Exception e){
+        System.err.println(e.toString());
+        }
+
+        finally {
+
+        if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+
+        if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+
+        if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+
+        }
+        return id;
+        }
    
-   public void getDailyPunchList(Badge b, Long t){
+   public ArrayList<Punch> getDailyPunchList(Badge b, Long ts){
        
+       String badgeid = b.getID();
+       int ID = 0;
+       
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
+       
+        ArrayList dailyPunch = new ArrayList();
+        
+        //Initialize Gregorian Calendar
+        GregorianCalendar gc1 = new GregorianCalendar();
+        gc1.setTimeInMillis(ts);
+        gc1.set(Calendar.HOUR, 0);
+        gc1.set(Calendar.MINUTE, 0);
+        gc1.set(Calendar.SECOND, 0);
+
+        GregorianCalendar gc2 = new GregorianCalendar();
+        gc2.setTimeInMillis(ts);
+        gc2.set(Calendar.HOUR, 23);
+        gc2.set(Calendar.MINUTE, 59);
+        gc2.set(Calendar.SECOND, 59);
+       
+       
+       try{
+           
+           if (conn.isValid(0)){
+               
+               query = "SELECT * FROM punch WHERE UNIX_TIMESTAMP('ORIGINALTIMESTAMP')*1000 AS ts WHERE badgeid = ? \n" +
+               "HAVING ts >= ? AND ts <= ? AND ORDER BY 'ORIGINALTIMESTAMP' ";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, badgeid);
+               pstSelect.setLong(2, gc1.getTimeInMillis());
+               pstSelect.setLong(3, gc2.getTimeInMillis());
+               
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
+               
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            String[] row = new String[columnCount];
+                            for(int i=0; i < columnCount; i++){
+                            row[i] = resultset.getString(i+1);
+
+                            }
+                            
+                            dailyPunch.add(row);
+
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                }
+           }
+       }
+       
+       catch(Exception e){
+           
+           System.err.println(e.toString());
+           
+       }
+       
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
+       
+       return dailyPunch; 
    }
 }

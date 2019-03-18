@@ -80,6 +80,7 @@ public class TASDatabase{
         
         try{
             conn.close();
+            System.out.println("Connection closing...");
         }
         catch(Exception e){
             System.err.println(e.toString());
@@ -166,7 +167,7 @@ public class TASDatabase{
                     
                     /* Check for More Data */
 
-                    hasresults = pstSelect.getMoreResults();
+                    hasresults = pstSelect.getMoreResults(); 
 
                 } 
            
@@ -488,7 +489,6 @@ public class TASDatabase{
    public ArrayList<Punch> getDailyPunchList(Badge b, Long ts){
        
        String badgeid = b.getID();
-       int ID = 0;
        
        boolean hasresults;
        ResultSet resultset = null;
@@ -497,32 +497,37 @@ public class TASDatabase{
        int columnCount, resultCount, updateCount = 0;
        String key, query;
        
-        ArrayList dailyPunch = new ArrayList();
+        ArrayList<Punch> dailyPunch = new ArrayList<>();
         
         //Initialize Gregorian Calendar
-        GregorianCalendar gc1 = new GregorianCalendar();
-        gc1.setTimeInMillis(ts);
-        gc1.set(Calendar.HOUR, 0);
-        gc1.set(Calendar.MINUTE, 0);
-        gc1.set(Calendar.SECOND, 0);
+        GregorianCalendar gcStart = new GregorianCalendar();
+        gcStart.setTimeInMillis(ts);
+        gcStart.set(Calendar.HOUR_OF_DAY, 0);
+        gcStart.set(Calendar.MINUTE, 0);
+        gcStart.set(Calendar.SECOND, 0);
+            //System.out.println("gcStop=" + gcStop.getTimeInMillis()); //gives 1536123600381
 
-        GregorianCalendar gc2 = new GregorianCalendar();
-        gc2.setTimeInMillis(ts);
-        gc2.set(Calendar.HOUR, 23);
-        gc2.set(Calendar.MINUTE, 59);
-        gc2.set(Calendar.SECOND, 59);
+        GregorianCalendar gcStop = new GregorianCalendar();
+        gcStop.setTimeInMillis(ts);
+        gcStop.set(Calendar.HOUR_OF_DAY, 23);
+        gcStop.set(Calendar.MINUTE, 59);
+        gcStop.set(Calendar.SECOND, 59);
+            //System.out.println("gcStop=" + gcStop.getTimeInMillis()); //gives 1536209999381
        
        
        try{
            
            if (conn.isValid(0)){
                
-               query = "SELECT * FROM punch WHERE UNIX_TIMESTAMP('ORIGINALTIMESTAMP')*1000 AS ts WHERE badgeid = ? \n" +
-               "HAVING ts >= ? AND ts <= ? AND ORDER BY 'ORIGINALTIMESTAMP' ";
+               query = "SELECT *, UNIX_TIMESTAMP(`ORIGINALTIMESTAMP`) * 1000 AS ts\n"
+               + "FROM punch\n" 
+               + "WHERE badgeid = ?\n"
+               + "HAVING ts >= ?\n"
+               + "AND ts <= ?\n";
                pstSelect = conn.prepareStatement(query);
                pstSelect.setString(1, badgeid);
-               pstSelect.setLong(2, gc1.getTimeInMillis());
-               pstSelect.setLong(3, gc2.getTimeInMillis());
+               pstSelect.setLong(2, gcStart.getTimeInMillis());
+               pstSelect.setLong(3, gcStop.getTimeInMillis());
                
                //Execute Select Query
                System.out.println("Submitting Query...");
@@ -539,19 +544,15 @@ public class TASDatabase{
                         metadata = resultset.getMetaData();
                         columnCount = metadata.getColumnCount();
                         
+                       //System.out.println("It made it!");
+                        
 
                         /* Get Data; Print as Table Rows */
                         
                         while(resultset.next()) {
                             
-                            String[] row = new String[columnCount];
-                            for(int i=0; i < columnCount; i++){
-                            row[i] = resultset.getString(i+1);
-
-                            }
-                            
-                            dailyPunch.add(row);
-
+                            int id = resultset.getInt("id");
+                            dailyPunch.add(getPunch(id));
                         }
                         
                     }

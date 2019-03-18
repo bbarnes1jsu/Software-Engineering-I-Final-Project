@@ -83,9 +83,8 @@ public class Punch {
         long startGraceTimeInMillis = startGrace.getTimeInMillis();
         
         startDock.setTimeInMillis(shiftStartInMillis);
-        
-        
-        
+        startDock.add(Calendar.MINUTE, s.getDock());
+        long startDockTimeInMillis = startDock.getTimeInMillis();
         
         lunchStart.setTimeInMillis(originalTimeStampInMillis);
         lunchStart.set(Calendar.HOUR_OF_DAY, s.getLunchStart().getHours());
@@ -108,8 +107,8 @@ public class Punch {
         long stopGraceTimeInMillis = stopGrace.getTimeInMillis();
         
         stopDock.setTimeInMillis(shiftStopInMillis);
-        
-        
+        stopDock.add(Calendar.MINUTE, -s.getDock());
+        long stopDockTimeInMillis = stopDock.getTimeInMillis();
         
         lunchStop.setTimeInMillis(shiftStopInMillis);
         lunchStop.set(Calendar.HOUR_OF_DAY, s.getLunchStop().getHours());

@@ -213,8 +213,9 @@ public class Punch {
             default:
                 break;
         }
-        return punch.toUpperCase();
+        return punch.toUpperCase() +" ("+note+")";
     }
+    
     public String getBadgeId(){
         return badgeId;
     }

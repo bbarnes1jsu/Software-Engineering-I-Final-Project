@@ -80,7 +80,7 @@ public class Punch {
         
         startGrace.setTimeInMillis(shiftStartInMillis);
         startGrace.add(Calendar.MINUTE, s.getGracePeriod());
-        long startGraceTimeInMillis = startGrace.getTimeInMillis();
+        long startGraceInMillis = startGrace.getTimeInMillis();
         
         startDock.setTimeInMillis(shiftStartInMillis);
         
@@ -101,11 +101,11 @@ public class Punch {
         
         stopInterval.setTimeInMillis(shiftStopInMillis);
         stopInterval.add(Calendar.MINUTE, s.getInterval());
-        long stopIntervalTimeInMillis = stopInterval.getTimeInMillis();
+        long stopIntervalInMillis = stopInterval.getTimeInMillis();
         
         stopGrace.setTimeInMillis(shiftStopInMillis);
         stopGrace.add(Calendar.MINUTE, -s.getGracePeriod());
-        long stopGraceTimeInMillis = stopGrace.getTimeInMillis();
+        long stopGraceInMillis = stopGrace.getTimeInMillis();
         
         stopDock.setTimeInMillis(shiftStopInMillis);
         
@@ -137,8 +137,64 @@ public class Punch {
                     note = "Interval Round";
                 }
             }
-    
         }
+        
+        else if(punchtypeid == 0){
+            if(originalTimeStampInMillis <= stopIntervalInMillis && originalTimeStampInMillis >= shiftStopInMillis + (s.getInterval() * 60000)){
+                note = "None";
+            }
+            else{
+                if(cal.get(Calendar.MINUTE) % interval >= interval / 2){
+                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
+                    cal2.set(Calendar.SECOND, 0);
+                }
+                else{
+                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                    cal2.set(Calendar.SECOND, 0);
+                }
+                note = "Interval Round";
+            }
+        }
+        
+        else{
+            //Handling Clocking In
+            if(punchtypeid == 1){
+                if(originalTimeStampInMillis <= shiftStartInMillis && originalTimeStampInMillis >= startIntervalInMillis){
+                    cal2.setTimeInMillis(shiftStartInMillis);
+                    note = "Shift Start";
+                }
+                else if(originalTimeStampInMillis >= shiftStartInMillis && originalTimeStampInMillis <= startGraceInMillis){
+                    cal2.setTimeInMillis(shiftStartInMillis);
+                    note = "Shift Start";
+                }
+                else if(originalTimeStampInMillis >= lunchStartInMillis && originalTimeStampInMillis <= lunchStopInMillis){
+                    cal2.setTimeInMillis(lunchStopInMillis);
+                    note = "Lunch Stop";
+                }
+                else if(originalTimeStampInMillis > startGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
+                    //need to dock if punch is too late for the grace period
+                }
+                else if(cal.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) + 1 && cal.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
+                        note = "None";
+                }
+                else{
+                    if(cal.get(Calendar.MINUTE) % interval <= interval / 2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    else{
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    note = "Interval Round";
+                }
+            }
+            
+            else if(punchtypeid == 0){
+                //Handling Clocking Out
+                
+            }
+        }    
     }
     public String printAdjustedTimestamp(){
         

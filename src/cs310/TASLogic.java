@@ -1,5 +1,8 @@
 package cs310;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.simple.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,7 +21,22 @@ public class TASLogic {
     }
     
     public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist){
-        return null; 
+        
+        /* Create ArrayList Object */
+        ArrayList<HashMap<String, String>> jsonData = new ArrayList<>();
+
+        /* Create HashMap Object (one for every Punch!) */
+        HashMap<String, String> punchData = new HashMap<>();
+
+        /* Add Punch Data to HashMap */
+        punchData.put("id", String.valueOf(Punch.getId()));
+
+        /* ... continue in the same way with the remaining Punch data ... */
+
+        /* Append HashMap to ArrayList */
+        jsonData.add(punchData);
+        
+        return null; //delete later
     }
     
 }

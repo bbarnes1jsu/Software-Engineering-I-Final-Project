@@ -18,6 +18,7 @@ public class Punch {
     private long adjustedTimeStamp = 0;
     private String badgeId;
     private String note;
+    private int id;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -84,7 +85,7 @@ public class Punch {
         
         startDock.setTimeInMillis(shiftStartInMillis);
         startDock.add(Calendar.MINUTE, s.getDock());
-        long startDockTimeInMillis = startDock.getTimeInMillis();
+        long startDockInMillis = startDock.getTimeInMillis();
         
         lunchStart.setTimeInMillis(originalTimeStampInMillis);
         lunchStart.set(Calendar.HOUR_OF_DAY, s.getLunchStart().getHours());
@@ -108,7 +109,7 @@ public class Punch {
         
         stopDock.setTimeInMillis(shiftStopInMillis);
         stopDock.add(Calendar.MINUTE, -s.getDock());
-        long stopDockTimeInMillis = stopDock.getTimeInMillis();
+        long stopDockInMillis = stopDock.getTimeInMillis();
         
         lunchStop.setTimeInMillis(shiftStopInMillis);
         lunchStop.set(Calendar.HOUR_OF_DAY, s.getLunchStop().getHours());
@@ -171,7 +172,8 @@ public class Punch {
                     note = "Lunch Stop";
                 }
                 else if(originalTimeStampInMillis > startGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
-                    //need to dock if punch is too late for the grace period
+                    cal2.setTimeInMillis(startDockInMillis);
+                    note = "Shift Dock";
                 }
                 else if(cal.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) + 1 && cal.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
                         note = "None";
@@ -235,9 +237,13 @@ public class Punch {
         return adjustedTimeStamp;
     }
     
+    public int getID(){
+        return id;
+    }
     public void setTimeStamp(long newTimeStamp){
         timeStamp = newTimeStamp;
     }
+  
 }
 
 

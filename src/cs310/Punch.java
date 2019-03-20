@@ -17,7 +17,8 @@ public class Punch {
     private long timeStamp = 0;
     private long adjustedTimeStamp = 0;
     private String badgeId;
-    private String intervalRound;
+    private String note;
+    private int id;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -80,12 +81,11 @@ public class Punch {
         
         startGrace.setTimeInMillis(shiftStartInMillis);
         startGrace.add(Calendar.MINUTE, s.getGracePeriod());
-        long startGraceTimeInMillis = startGrace.getTimeInMillis();
+        long startGraceInMillis = startGrace.getTimeInMillis();
         
         startDock.setTimeInMillis(shiftStartInMillis);
-        
-        
-        
+        startDock.add(Calendar.MINUTE, s.getDock());
+        long startDockInMillis = startDock.getTimeInMillis();
         
         lunchStart.setTimeInMillis(originalTimeStampInMillis);
         lunchStart.set(Calendar.HOUR_OF_DAY, s.getLunchStart().getHours());
@@ -101,15 +101,15 @@ public class Punch {
         
         stopInterval.setTimeInMillis(shiftStopInMillis);
         stopInterval.add(Calendar.MINUTE, s.getInterval());
-        long stopIntervalTimeInMillis = stopInterval.getTimeInMillis();
+        long stopIntervalInMillis = stopInterval.getTimeInMillis();
         
         stopGrace.setTimeInMillis(shiftStopInMillis);
         stopGrace.add(Calendar.MINUTE, -s.getGracePeriod());
-        long stopGraceTimeInMillis = stopGrace.getTimeInMillis();
+        long stopGraceInMillis = stopGrace.getTimeInMillis();
         
         stopDock.setTimeInMillis(shiftStopInMillis);
-        
-        
+        stopDock.add(Calendar.MINUTE, -s.getDock());
+        long stopDockInMillis = stopDock.getTimeInMillis();
         
         lunchStop.setTimeInMillis(shiftStopInMillis);
         lunchStop.set(Calendar.HOUR_OF_DAY, s.getLunchStop().getHours());
@@ -123,7 +123,7 @@ public class Punch {
             
             if(punchtypeid == 1){
                 if(originalTimeStampInMillis >= startIntervalInMillis && originalTimeStampInMillis <= shiftStartInMillis + (s.getInterval() * 60000)){
-                    intervalRound = "None";
+                    note = "None";
                 }
                 else{
                     if(cal.get(Calendar.MINUTE) % interval <= interval /2){
@@ -134,11 +134,68 @@ public class Punch {
                         cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
                         cal2.set(Calendar.SECOND, 0);
                     }
-                    intervalRound = "Interval Round";
+                    note = "Interval Round";
                 }
             }
-    
         }
+        
+        else if(punchtypeid == 0){
+            if(originalTimeStampInMillis <= stopIntervalInMillis && originalTimeStampInMillis >= shiftStopInMillis + (s.getInterval() * 60000)){
+                note = "None";
+            }
+            else{
+                if(cal.get(Calendar.MINUTE) % interval >= interval / 2){
+                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
+                    cal2.set(Calendar.SECOND, 0);
+                }
+                else{
+                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                    cal2.set(Calendar.SECOND, 0);
+                }
+                note = "Interval Round";
+            }
+        }
+        
+        else{
+            //Handling Clocking In
+            if(punchtypeid == 1){
+                if(originalTimeStampInMillis <= shiftStartInMillis && originalTimeStampInMillis >= startIntervalInMillis){
+                    cal2.setTimeInMillis(shiftStartInMillis);
+                    note = "Shift Start";
+                }
+                else if(originalTimeStampInMillis >= shiftStartInMillis && originalTimeStampInMillis <= startGraceInMillis){
+                    cal2.setTimeInMillis(shiftStartInMillis);
+                    note = "Shift Start";
+                }
+                else if(originalTimeStampInMillis >= lunchStartInMillis && originalTimeStampInMillis <= lunchStopInMillis){
+                    cal2.setTimeInMillis(lunchStopInMillis);
+                    note = "Lunch Stop";
+                }
+                else if(originalTimeStampInMillis > startGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
+                    cal2.setTimeInMillis(startDockInMillis);
+                    note = "Shift Dock";
+                }
+                else if(cal.get(Calendar.HOUR_OF_DAY) == shiftStart.get(Calendar.HOUR_OF_DAY) + 1 && cal.get(Calendar.MINUTE) == shiftStart.get(Calendar.MINUTE)){
+                        note = "None";
+                }
+                else{
+                    if(cal.get(Calendar.MINUTE) % interval <= interval / 2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    else{
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    note = "Interval Round";
+                }
+            }
+            
+            else if(punchtypeid == 0){
+                //Handling Clocking Out
+                
+            }
+        }    
     }
     public String printAdjustedTimestamp(){
         
@@ -157,8 +214,9 @@ public class Punch {
             default:
                 break;
         }
-        return punch.toUpperCase();
+        return punch.toUpperCase() +" ("+note+")";
     }
+    
     public String getBadgeId(){
         return badgeId;
     }
@@ -179,9 +237,13 @@ public class Punch {
         return adjustedTimeStamp;
     }
     
+    public int getID(){
+        return id;
+    }
     public void setTimeStamp(long newTimeStamp){
         timeStamp = newTimeStamp;
     }
+  
 }
 
 

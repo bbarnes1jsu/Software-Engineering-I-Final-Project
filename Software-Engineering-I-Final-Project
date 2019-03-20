@@ -1,0 +1,6 @@
+tree af6e09824ccc6e4e7b434039ea4e5b344b01c0c7
+parent 001035729fa5b330af8e7bc8bb6d6901dc0d962d
+author Damien Moyer <dmoyer@stu.jsu.edu> 1552927535 -0500
+committer Damien Moyer <dmoyer@stu.jsu.edu> 1552927535 -0500
+
+Implemented empty TASLogic methods

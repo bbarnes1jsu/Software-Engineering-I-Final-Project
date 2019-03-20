@@ -193,7 +193,36 @@ public class Punch {
             
             else if(punchtypeid == 0){
                 //Handling Clocking Out
-                
+                if(originalTimeStampInMillis <= shiftStopInMillis && originalTimeStampInMillis >= shiftStopInMillis){
+                    cal2.setTimeInMillis(shiftStopInMillis);
+                    note = "Shift Stop";
+                }
+                else if(originalTimeStampInMillis >= shiftStopInMillis && originalTimeStampInMillis <= startGraceInMillis){
+                    cal2.setTimeInMillis(shiftStopInMillis);
+                    note = "Shift Stop";
+                }
+                else if(originalTimeStampInMillis >= lunchStopInMillis && originalTimeStampInMillis <= lunchStartInMillis){
+                    cal2.setTimeInMillis(lunchStartInMillis);
+                    note = "Lunch Start";
+                }
+                else if(originalTimeStampInMillis > stopGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
+                    cal2.setTimeInMillis(startDockInMillis);
+                    note = "Shift Dock";
+                }
+                else if(cal.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) + 1 && cal.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
+                        note = "None";
+                }
+                else{
+                    if(cal.get(Calendar.MINUTE) % interval <= interval / 2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    else{
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    note = "Interval Round";
+                }
             }
         }    
     }

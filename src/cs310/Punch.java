@@ -137,27 +137,27 @@ public class Punch {
                     note = "Interval Round";
                 }
             }
-        }
         
-        else if(punchtypeid == 0){
-            if(originalTimeStampInMillis <= stopIntervalInMillis && originalTimeStampInMillis >= shiftStopInMillis + (s.getInterval() * 60000)){
-                note = "None";
-            }
-            else{
-                if(cal.get(Calendar.MINUTE) % interval >= interval / 2){
-                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
-                    cal2.set(Calendar.SECOND, 0);
+        
+            else if(punchtypeid == 0){
+                if(originalTimeStampInMillis <= stopIntervalInMillis && originalTimeStampInMillis >= shiftStopInMillis + (s.getInterval() * 60000)){
+                    note = "None";
                 }
                 else{
-                    cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
-                    cal2.set(Calendar.SECOND, 0);
+                    if(cal.get(Calendar.MINUTE) % interval >= interval / 2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (interval - (cal.get(Calendar.MINUTE) % interval)));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    else{
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.SECOND, 0);
+                    }
+                    note = "Interval Round";
                 }
-                note = "Interval Round";
             }
-        }
-        
+        }    
         else{
-            //Handling Clocking In
+            //Handling Clocking In on Weekdays
             if(punchtypeid == 1){
                 if(originalTimeStampInMillis <= shiftStartInMillis && originalTimeStampInMillis >= startIntervalInMillis){
                     cal2.setTimeInMillis(shiftStartInMillis);
@@ -192,53 +192,57 @@ public class Punch {
             }
             
             else if(punchtypeid == 0){
-                //Handling Clocking Out
-                if(originalTimeStampInMillis <= shiftStopInMillis && originalTimeStampInMillis >= shiftStopInMillis){
+                //Handling Clocking Out on Weekdays
+                if(originalTimeStampInMillis >= stopGraceInMillis && originalTimeStampInMillis <= shiftStopInMillis){
                     cal2.setTimeInMillis(shiftStopInMillis);
                     note = "Shift Stop";
                 }
-                else if(originalTimeStampInMillis >= shiftStopInMillis && originalTimeStampInMillis <= startGraceInMillis){
+                else if(originalTimeStampInMillis <= stopIntervalInMillis && originalTimeStampInMillis >= shiftStopInMillis){
                     cal2.setTimeInMillis(shiftStopInMillis);
                     note = "Shift Stop";
                 }
-                else if(originalTimeStampInMillis >= lunchStopInMillis && originalTimeStampInMillis <= lunchStartInMillis){
+                else if(originalTimeStampInMillis >= lunchStartInMillis && originalTimeStampInMillis < lunchStopInMillis){
                     cal2.setTimeInMillis(lunchStartInMillis);
                     note = "Lunch Start";
                 }
-                else if(originalTimeStampInMillis > stopGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
-                    cal2.setTimeInMillis(startDockInMillis);
+                else if(originalTimeStampInMillis < stopGraceInMillis && cal.get(Calendar.MINUTE) % interval < interval /2){
+                    cal2.setTimeInMillis(stopDockInMillis);
                     note = "Shift Dock";
                 }
                 else if(cal.get(Calendar.HOUR_OF_DAY) == shiftStop.get(Calendar.HOUR_OF_DAY) + 1 && cal.get(Calendar.MINUTE) == shiftStop.get(Calendar.MINUTE)){
                         note = "None";
+                        cal2.set(Calendar.SECOND,0);
                 }
                 else{
-                    if(cal.get(Calendar.MINUTE) % interval <= interval / 2){
-                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
+                    if(cal.get(Calendar.MINUTE) % interval >= interval / 2){
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (cal.get(Calendar.MINUTE) % interval)+1);
                         cal2.set(Calendar.SECOND, 0);
                     }
                     else{
-                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (cal.get(Calendar.MINUTE) % interval));
+                        cal2.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - (cal.get(Calendar.MINUTE) % interval));
                         cal2.set(Calendar.SECOND, 0);
                     }
                     note = "Interval Round";
                 }
             }
-        }    
+        }
+        
+        adjustedTimeStamp = cal2.getTimeInMillis();
     }
+    
     public String printAdjustedTimestamp(){
         
         String punch = null;
         
         switch (punchtypeid) {
             case 0:
-                punch = "#" + badgeId + " CLOCKED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " CLOCKED OUT: " + cal2.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             case 1:
-                punch = "#" + badgeId + " CLOCKED IN: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " CLOCKED IN: " + cal2.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             case 2:
-                punch = "#" + badgeId + " TIMED OUT: " + cal.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
+                punch = "#" + badgeId + " TIMED OUT: " + cal2.toZonedDateTime().format(DateTimeFormatter.ofPattern("E MM/dd/uuuu HH:mm:ss"));
                 break;
             default:
                 break;

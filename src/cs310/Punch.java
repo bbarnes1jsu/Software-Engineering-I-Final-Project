@@ -279,6 +279,10 @@ public class Punch {
         timeStamp = newTimeStamp;
     }
     
+    public void setID (int newID){
+        id = newID;
+    }
+    
     public String getPunchdata(){
         note = punchdata;
         return punchdata;

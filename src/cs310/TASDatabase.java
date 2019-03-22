@@ -373,19 +373,18 @@ public class TASDatabase{
                             
                             /* Loop Through ResultSet Columns; Print Values */
 
-                        //int getid = resultset.getInt("id");
                         int terminalID = resultset.getInt("terminalid");
                         int ptID = resultset.getInt("punchtypeid");
                         long timeStamp = resultset.getLong("ts");
                         String badgeID = resultset.getString("badgeId");
+                        int ID = resultset.getInt("id");
+                        String punchdata = resultset.getString("punchdata"); 
 
                         Badge badge = getBadge(badgeID);
 
                         punchQuery = new Punch(badge, terminalID, ptID);
                         punchQuery.setTimeStamp(timeStamp); 
-                        
-                        System.out.println(punchQuery.getOriginalTimeStamp());
-
+                        punchQuery.setID(ID); 
                         }
                         
                     }

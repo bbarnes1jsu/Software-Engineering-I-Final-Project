@@ -243,6 +243,10 @@ public class Punch {
     public void setTimeStamp(long newTimeStamp){
         timeStamp = newTimeStamp;
     }
+    
+    public void setID (int newID){
+        id = newID;
+    }
   
 }
 

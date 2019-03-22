@@ -284,7 +284,7 @@ public class Punch {
     }
     
     public String getPunchdata(){
-        note = punchdata;
+        punchdata = note;
         return punchdata;
     }
   

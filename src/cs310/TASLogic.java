@@ -38,7 +38,7 @@ public class TASLogic {
             punchData.put("terminalid", String.valueOf(punch.getTerminalId()));
             punchData.put("punchtypeid", String.valueOf(punch.getPunchTypeId()));
             punchData.put("punchdata", String.valueOf(punch.getPunchdata()));
-            punchData.put("oringinaltimestamp", String.valueOf(punch.getOriginalTimeStamp()));
+            punchData.put("originaltimestamp", String.valueOf(punch.getOriginalTimeStamp()));
             punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedTimeStamp()));
 
             /* Append HashMap to ArrayList */

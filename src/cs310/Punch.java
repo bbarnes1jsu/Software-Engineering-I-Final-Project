@@ -19,6 +19,7 @@ public class Punch {
     private String badgeId;
     private String note;
     private int id;
+    private String punchdata;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){

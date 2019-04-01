@@ -83,4 +83,9 @@ public class Shift {
     public String getDesc() {
         return desc;
     }
+    
+    public int getLunchTime(){
+        int lunchTime = (int) (((lunchStop.getTime()- lunchStart.getTime())/60000));
+        return lunchTime;
+    }
 }

@@ -20,6 +20,7 @@ public class Punch {
     private String note;
     private int id;
     private String punchdata;
+    private boolean lunchFlag = false;
     
     //Constructor
     public Punch(Badge badge,int terminalid,int punchtypeid){
@@ -171,6 +172,7 @@ public class Punch {
                 else if(originalTimeStampInMillis >= lunchStartInMillis && originalTimeStampInMillis <= lunchStopInMillis){
                     cal2.setTimeInMillis(lunchStopInMillis);
                     note = "Lunch Stop";
+                    lunchFlag = true;
                 }
                 else if(originalTimeStampInMillis > startGraceInMillis && cal.get(Calendar.MINUTE) % interval > interval /2){
                     cal2.setTimeInMillis(startDockInMillis);
@@ -205,6 +207,7 @@ public class Punch {
                 else if(originalTimeStampInMillis >= lunchStartInMillis && originalTimeStampInMillis < lunchStopInMillis){
                     cal2.setTimeInMillis(lunchStartInMillis);
                     note = "Lunch Start";
+                    lunchFlag = true;
                 }
                 else if(originalTimeStampInMillis < stopGraceInMillis && cal.get(Calendar.MINUTE) % interval < interval /2){
                     cal2.setTimeInMillis(stopDockInMillis);
@@ -287,6 +290,9 @@ public class Punch {
         punchdata = note;
         return punchdata;
     }
+    public boolean getLunchFlag(){
+        return this.lunchFlag;
+}
   
 }
 

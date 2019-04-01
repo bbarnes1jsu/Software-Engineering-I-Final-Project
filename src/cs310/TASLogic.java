@@ -18,26 +18,27 @@ public class TASLogic {
     
     public static int calculateTotalMinutes(ArrayList<Punch> dailypunchlist, Shift shift){
         int dailyMin = 0;
-        if (dailypunchlist.size() > 2){
+        
+        if (dailypunchlist.size() < 2){
             return 0;
         }
-        for (int i = 0; i < dailypunchlist.size(); i = i+2){
-            
+        
+        for (int i = 0; i < dailypunchlist.size(); i=i+2){
             Punch clockIn = (Punch) dailypunchlist.get(i);
             Punch clockOut = (Punch) dailypunchlist.get(i+1);
+                              
+            if ((clockIn.getPunchTypeId()!=2) && (clockOut.getPunchTypeId()!=2)){
+                long clockDifference = clockOut.cal2.getTimeInMillis()-clockIn.cal2.getTimeInMillis();
+                dailyMin = dailyMin + (int) (clockDifference/60000);
+            }
             
-            if (clockIn.getPunchTypeId() !=2 && clockOut.getPunchTypeId() !=2){
-                long clockDifference = clockOut.cal2.getTimeInMillis() - clockIn.cal2.getTimeInMillis();
-                
-                
+            if ((dailyMin > shift.getLunchDeduct()) && (clockIn.getLunchFlag() == false)){
+                int lunchMins = dailyMin - shift.getLunchTime();
+                return lunchMins;
             }
-            if ((dailyMin > shift.getLunchDeduct())){
-                int numberOfLunchMins = dailyMin - shift.getLunchTime();
-                return numberOfLunchMins;
-            }
-        }
-        return(dailyMin);
-    }
+        }            
+        return dailyMin;        
+    }   
     
     public static String getPunchListAsJSON(ArrayList<Punch> dailypunchlist){
         

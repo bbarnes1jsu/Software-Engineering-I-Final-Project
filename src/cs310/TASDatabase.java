@@ -594,8 +594,19 @@ public class TASDatabase{
    
    public ArrayList<Punch> getPayPeriodPunchList(Badge b, Long ts){
        //A pay period is one week
-       return null; //remove later
-       
+       ArrayList<Punch> weeklyPunch = new ArrayList<>();
+       ArrayList<Punch> dailyPunch;
+       for(int i = 1; i < 8; i++){
+           dailyPunch = getDailyPunchList(b, ts);
+           
+           for(int p = 0; p < dailyPunch.size(); p++){
+               weeklyPunch.add(dailyPunch.get(p));
+               
+           }
+           ts += 86400000; 
+       }
+       return weeklyPunch;
+
    }
    
    public void getAbsenteeism(Badge ID, long pts){

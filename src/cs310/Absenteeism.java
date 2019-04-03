@@ -11,6 +11,5 @@ package cs310;
  */
 public class Absenteeism {
     
-   
-    
+
 }

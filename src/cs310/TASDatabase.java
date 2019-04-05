@@ -609,9 +609,9 @@ public class TASDatabase{
 
    }
    
-   public Absenteeism getAbsenteeism(Badge badge, long pts){
+   public Absenteeism getAbsenteeism(String badge, long pts){
        Absenteeism absentQuery = null;
-       String badgeid = badge.getID();
+       String badgeid = badge;
        boolean hasresults;
        ResultSet resultset = null;
        PreparedStatement pstSelect = null, pstUpdate = null;
@@ -625,7 +625,7 @@ public class TASDatabase{
            if (conn.isValid(0)){
                
                // Prepare Select Query
-               query = "SELECT * FROM employee WHERE badgeid = ?";
+               query = "SELECT * FROM absenteeism WHERE badgeid = ?";
                pstSelect = conn.prepareStatement(query);
                pstSelect.setString(1, badgeid);
                
@@ -659,7 +659,7 @@ public class TASDatabase{
                         long payperiod = resultset.getLong("payperiod");
                         double percentage = resultset.getDouble("percentage");
 
-                        absentQuery = new Absenteeism(String, long, double);
+                        absentQuery = new Absenteeism(badgeID, payperiod, percentage);
                         
                         }
                         
@@ -700,7 +700,7 @@ public class TASDatabase{
             
         }
     
-       return null;
+       return absentQuery;
    }
    
    public Absenteeism insertAbsenteeism(Absenteeism object){

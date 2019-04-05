@@ -20,7 +20,7 @@ public class Absenteeism {
     private double absenteeismPercentage;
     GregorianCalendar payDay = new GregorianCalendar();
    
-    public Absenteeism(String badgeId,long payPeriodTimestamp, double absenteeismPercantage){
+    public Absenteeism(String badgeId,long payPeriodTimestamp, double absenteeismPercentage){
         this.badgeId = badgeId;
         this.payPeriodTimestamp = payPeriodTimestamp;
         this.absenteeismPercentage = absenteeismPercentage;
@@ -46,7 +46,7 @@ public class Absenteeism {
             return absenteeismPercentage;
         }
 
-        public void setAbsenteeismPercantage(float absenteeismPercentage){
+        public void setAbsenteeismPercantage(double absenteeismPercentage){
             this.absenteeismPercentage = absenteeismPercentage;
         }
         

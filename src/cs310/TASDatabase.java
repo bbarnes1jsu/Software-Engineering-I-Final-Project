@@ -703,7 +703,59 @@ public class TASDatabase{
        return absentQuery;
    }
    
-   public Absenteeism insertAbsenteeism(Absenteeism object){
-       return null;
-   }
+   public void insertAbsenteeism(Absenteeism object){
+        Connection conn = null;
+        PreparedStatement pstSelect = null, pstUpdate = null;
+        ResultSet resultset = null;
+        String query;
+        int updateCount = 0;
+
+
+        String badgeid = object.getId();
+        long payperiod = object.getPayPeriodTimestamp();
+        double percentage = object.getAbsenteeismPercentage();
+        Timestamp payday = new Timestamp(System.currentTimeMillis());
+
+
+        try{ 
+
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+
+            Statement stmt = conn.createStatement( );
+            payday.setTime(payperiod);
+            query = "INSERT INTO absenteeism (badgeid, payperiod, percentage) VALUES (?, ?, ?)";
+            pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+
+            pstUpdate.setString(1,badgeid);
+            pstUpdate.setTimestamp(2, payday);                        
+            pstUpdate.setDouble(3,percentage);
+
+            // Get New Key; Print To Console
+            updateCount = pstUpdate.executeUpdate();
+            if (updateCount > 0) {
+
+                resultset = pstUpdate.getGeneratedKeys();
+
+            }
+
+            conn.close( );
+
+        }
+
+        catch (Exception e){
+            System.err.println(e.toString());
+        }
+
+        finally {
+
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+
+        }
+    }
+
 }

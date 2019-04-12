@@ -39,7 +39,7 @@ public class Feature6 {
         
         /* Insert Absenteeism Into Database */
         
-        Absenteeism a1 = new Absenteeism(b.getId(), ts, percentage);
+        Absenteeism a1 = new Absenteeism(b.getID(), ts, percentage);
         db.insertAbsenteeism(a1);
         
         /* Retrieve Absenteeism From Database */
@@ -78,7 +78,7 @@ public class Feature6 {
         
         /* Insert Absenteeism Into Database */
         
-        Absenteeism a1 = new Absenteeism(b.getId(), ts, percentage);
+        Absenteeism a1 = new Absenteeism(b.getID(), ts, percentage);
         db.insertAbsenteeism(a1);
         
         /* Retrieve Absenteeism From Database */

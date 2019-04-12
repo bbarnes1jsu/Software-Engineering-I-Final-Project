@@ -655,11 +655,11 @@ public class TASDatabase{
                             
                             /* Loop Through ResultSet Columns; Print Values */
 
-                        String badgeID = resultset.getString("badgeid");
+                        //String badgeID = resultset.getString("badgeid");
                         long payperiod = resultset.getLong("payperiod");
                         double percentage = resultset.getDouble("percentage");
 
-                        absentQuery = new Absenteeism(badgeID, payperiod, percentage);
+                        absentQuery = new Absenteeism(badgeid, payperiod, percentage);
                         
                         }
                         

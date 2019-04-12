@@ -82,8 +82,8 @@ public class TASLogic {
             Punch clockOut = (Punch) punchlist.get(i+1);
             
             if((clockIn.getPunchTypeId()!=2) && (clockOut.getPunchTypeId()!=2)){
-                long clockDifference = clockOut.cal2.getTimeInMillis()-clockIn.cal2.getTimeInMillis();
-                totalNumberOfMinutes = totalNumberOfMinutes + (int)(clockDifference/60000);
+                long clockTimeDifference = clockOut.cal2.getTimeInMillis()-clockIn.cal2.getTimeInMillis();
+                totalNumberOfMinutes = totalNumberOfMinutes + (int)(clockTimeDifference/60000);
             }
             if((totalNumberOfMinutes > shift.getLunchDeduct()) && (clockIn.getLunchFlag() == false)){
                 double numberOfLunchMinutes = totalNumberOfMinutes - shift.getLunchTime();

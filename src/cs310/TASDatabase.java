@@ -594,15 +594,168 @@ public class TASDatabase{
    
    public ArrayList<Punch> getPayPeriodPunchList(Badge b, Long ts){
        //A pay period is one week
-       return null; //remove later
-       
+       ArrayList<Punch> weeklyPunch = new ArrayList<>();
+       ArrayList<Punch> dailyPunch;
+       for(int i = 1; i < 8; i++){
+           dailyPunch = getDailyPunchList(b, ts);
+           
+           for(int p = 0; p < dailyPunch.size(); p++){
+               weeklyPunch.add(dailyPunch.get(p));
+               
+           }
+           ts += 86400000; //cycles a day
+       }
+       return weeklyPunch;
+
    }
    
-   public void getAbsenteeism(Badge ID, long pts){
+   public Absenteeism getAbsenteeism(String badge, long pts){
+       Absenteeism absentQuery = null;
+       String badgeid = badge;
+       boolean hasresults;
+       ResultSet resultset = null;
+       PreparedStatement pstSelect = null, pstUpdate = null;
+       ResultSetMetaData metadata = null;
+       int columnCount, resultCount, updateCount = 0;
+       String key, query;
+
+       //Query for badge info
+       try{
+           
+           if (conn.isValid(0)){
+               
+               // Prepare Select Query
+               query = "SELECT * FROM absenteeism WHERE badgeid = ?";
+               pstSelect = conn.prepareStatement(query);
+               pstSelect.setString(1, badgeid);
+               
+               //Execute Select Query
+               System.out.println("Submitting Query...");
+               hasresults = pstSelect.execute();
+               
+               //Get Results
+               while ( hasresults || pstSelect.getUpdateCount() != -1 ) {
+
+                    if ( hasresults ) {
+                        
+                        /* Get ResultSet Metadata */
+                        
+                        resultset = pstSelect.getResultSet();
+                        metadata = resultset.getMetaData();
+                        columnCount = metadata.getColumnCount();
+                        
+
+                        /* Get Data; Print as Table Rows */
+                        
+                        while(resultset.next()) {
+                            
+                            /* Begin Next ResultSet Row */
+
+                            System.out.println();
+                            
+                            /* Loop Through ResultSet Columns; Print Values */
+
+                        String badgeID = resultset.getString("badgeid");
+                        long payperiod = resultset.getLong("payperiod");
+                        double percentage = resultset.getDouble("percentage");
+
+                        absentQuery = new Absenteeism(badgeID, payperiod, percentage);
+                        
+                        }
+                        
+                    }
+
+                    else {
+
+                        resultCount = pstSelect.getUpdateCount();  
+
+                        if ( resultCount == -1 ) {
+                            break;
+                        }
+
+                    }
+                    
+                    /* Check for More Data */
+
+                    hasresults = pstSelect.getMoreResults();
+
+                } 
+           
+            }
+           
+       }
+       catch(Exception e){
+           
+           System.err.println(e.toString());
+           
+       }
        
+       finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
+    
+       return absentQuery;
    }
    
-   public void insertAbsenteeism(Absenteeism object){
+   public void insertAbsenteeism(Absenteeism absent){
        
+    Connection conn = null;
+    PreparedStatement pstSelect = null, pstUpdate = null;
+    ResultSet resultset = null;
+    String query;
+    int updateCount = 0;
+                   
+                  
+    String badgeid = absent.getId();
+    long payperiod = absent.getPayPeriodTimestamp();
+    double percentage = absent.getAbsenteeismPercentage();
+    Timestamp payday = new Timestamp(System.currentTimeMillis());
+                  
+                    
+    try{ 
+          
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
+                               
+        Statement stmt = conn.createStatement( );
+        payday.setTime(payperiod);
+        query = "INSERT INTO absenteeism (badgeid, payperiod, percentage) VALUES (?, ?, ?)";
+        pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                              
+                              
+        pstUpdate.setString(1,badgeid);
+        pstUpdate.setTimestamp(2, payday);                        
+        pstUpdate.setDouble(3,percentage);
+                               
+        // Get New Key; Print To Console
+        updateCount = pstUpdate.executeUpdate();
+        if (updateCount > 0) {
+            
+            resultset = pstUpdate.getGeneratedKeys();
+                                    
+        }
+
+        conn.close( );
+                              
+        }
+                   
+        catch (Exception e){
+            System.err.println(e.toString());
+        }
+                   
+        finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+            
+        }
    }
 }

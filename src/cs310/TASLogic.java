@@ -97,4 +97,40 @@ public class TASLogic {
         return absenteeismPercentage;
     }
     
+    public static String getPunchListPlusTotalsAsJSON(ArrayList<Punch> punchlist, Shift s) {
+        
+        ArrayList<HashMap<String, String>> jsonData = new ArrayList<>();
+        
+        for (int i = 0; i < punchlist.size(); i++){
+            
+            Punch punch = punchlist.get(i); 
+            
+            /* Create HashMap Object (one for every Punch!) */
+            HashMap<String, String> punchData = new HashMap<>();
+
+            /* Add Punch Data to HashMap */
+            punchData.put("id", String.valueOf(punch.getID()));
+            punchData.put("badgeid", String.valueOf(punch.getBadgeId()));
+            punchData.put("terminalid", String.valueOf(punch.getTerminalId()));
+            punchData.put("punchtypeid", String.valueOf(punch.getPunchTypeId()));
+            punchData.put("punchdata", String.valueOf(punch.getPunchdata()));
+            punchData.put("originaltimestamp", String.valueOf(punch.getOriginalTimeStamp()));
+            punchData.put("adjustedtimestamp", String.valueOf(punch.getAdjustedTimeStamp()));
+            
+
+            /* Append HashMap to ArrayList */
+            jsonData.add(punchData);    
+        }
+        
+            
+        HashMap<String, String> absenteeData = new HashMap<>();
+        
+        absenteeData.put("totalminutes", String.valueOf(calculateTotalMinutes(punchlist, s))); 
+        absenteeData.put("absenteeism", String.valueOf(calculateAbsenteeism(punchlist, s))); 
+        jsonData.add(absenteeData); 
+        
+        String json = JSONValue.toJSONString(jsonData);
+        return json;
+    }
+    
 }

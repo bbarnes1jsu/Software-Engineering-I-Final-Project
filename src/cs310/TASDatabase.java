@@ -540,10 +540,7 @@ public class TASDatabase{
                         
                         resultset = pstSelect.getResultSet();
                         metadata = resultset.getMetaData();
-                        columnCount = metadata.getColumnCount();
-                        
-                       //System.out.println("It made it!");
-                        
+                        columnCount = metadata.getColumnCount();                                           
 
                         /* Get Data; Print as Table Rows */
                         
@@ -685,7 +682,7 @@ public class TASDatabase{
            
        }
        catch(Exception e){
-           
+
            System.err.println(e.toString());
            
        }
@@ -705,7 +702,6 @@ public class TASDatabase{
    
    public void insertAbsenteeism(Absenteeism absent){
        
-    Connection conn = null;
     PreparedStatement pstSelect = null, pstUpdate = null;
     ResultSet resultset = null;
     String query;
@@ -719,43 +715,41 @@ public class TASDatabase{
                   
                     
     try{ 
-          
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
-                               
-        Statement stmt = conn.createStatement( );
-        payday.setTime(payperiod);
-        query = "INSERT INTO absenteeism (badgeid, payperiod, percentage) VALUES (?, ?, ?)";
-        pstUpdate = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                              
-                              
-        pstUpdate.setString(1,badgeid);
-        pstUpdate.setTimestamp(2, payday);                        
-        pstUpdate.setDouble(3,percentage);
-                               
-        // Get New Key; Print To Console
-        updateCount = pstUpdate.executeUpdate();
-        if (updateCount > 0) {
+        
+        if (conn.isValid(0)){
+            Statement stmt = conn.createStatement();
             
-            resultset = pstUpdate.getGeneratedKeys();
+            query = "INSERT INTO absenteeism (badgeid, payperiod, percentage) VALUES (?, ?, ?)";
+            pstUpdate = conn.prepareStatement(query, Statement. RETURN_GENERATED_KEYS);
+            
+            pstUpdate.setString(1,badgeid);
+            pstUpdate.setTimestamp(2, payday);                        
+            pstUpdate.setDouble(3,percentage);
+            
+            updateCount = pstUpdate.executeUpdate();
+            if (updateCount > 0) {
+            
+                resultset = pstUpdate.getGeneratedKeys();
                                     
+            }
+            
         }
-
-        conn.close( );
                               
-        }
+    }
                    
-        catch (Exception e){
-            System.err.println(e.toString());
-        }
-                   
-        finally {
-            
-            if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
-            
-            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
-            
-            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
-            
-        }
+    catch (Exception e){
+
+        System.err.println(e.toString());
+    }
+
+    finally {
+
+        if (resultset != null) { try { resultset.close(); resultset = null; } catch (Exception e) {} }
+
+        if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; } catch (Exception e) {} }
+
+        if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; } catch (Exception e) {} }
+
+    }
    }
 }

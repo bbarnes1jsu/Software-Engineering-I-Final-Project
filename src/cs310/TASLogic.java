@@ -72,6 +72,8 @@ public class TASLogic {
     
     public static double calculateAbsenteeism(ArrayList<Punch> punchlist, Shift shift){
         
+        double totalNumberOfScheduledMinutes = 0;
+        double absenteeismPercentage = 0;
         double totalNumberOfMinutes = 0;
         
         if(punchlist.size() < 2){
@@ -85,12 +87,14 @@ public class TASLogic {
                 long clockTimeDifference = clockOut.cal2.getTimeInMillis()-clockIn.cal2.getTimeInMillis();
                 totalNumberOfMinutes = totalNumberOfMinutes + (int)(clockTimeDifference/60000);
             }
-            if((totalNumberOfMinutes > shift.getLunchDeduct()) && (clockIn.getLunchFlag() == false)){
-                double numberOfLunchMinutes = totalNumberOfMinutes - shift.getLunchTime();
-                return numberOfLunchMinutes;
+            if((totalNumberOfScheduledMinutes > shift.getLunchDeduct()) && (clockIn.getLunchFlag() == false)){
+                totalNumberOfScheduledMinutes = totalNumberOfMinutes - shift.getLunchTime();
+                return totalNumberOfScheduledMinutes;
             }
+            return totalNumberOfMinutes;
         }
-        return totalNumberOfMinutes;
+        absenteeismPercentage = (totalNumberOfScheduledMinutes - totalNumberOfMinutes)/totalNumberOfScheduledMinutes;
+        return absenteeismPercentage;
     }
     
 }
